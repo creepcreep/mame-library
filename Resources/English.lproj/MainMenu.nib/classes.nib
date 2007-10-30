@@ -1,0 +1,168 @@
+{
+    IBClasses = (
+        {CLASS = DBBottomButton; LANGUAGE = ObjC; SUPERCLASS = NSButton; }, 
+        {
+            CLASS = DBSourceSplitView; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {leftSubview = id; rightSubview = id; }; 
+            SUPERCLASS = KFSplitView; 
+        }, 
+        {CLASS = DBSourceView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            CLASS = KFSplitView; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {kfDelegate = id; }; 
+            SUPERCLASS = NSSplitView; 
+        }, 
+        {
+            ACTIONS = {
+                checkForHistoryDatUpdates = id; 
+                export = id; 
+                findNewRoms = id; 
+                findScreenshots = id; 
+                forceFetch = id; 
+                getInfo = id; 
+                getMAMEOSX = id; 
+                import = id; 
+                importFromMAME = id; 
+                launchSelectedGame = id; 
+                revealInFinder = id; 
+                saveAction = id; 
+                setGamesControllerPredicate = id; 
+                setGamesControllerSortDescriptors = id; 
+                setRating = id; 
+                showDebugWindow = id; 
+                showFAQ = id; 
+                showReleaseNotes = id; 
+                sortAscending = id; 
+                sortDescending = id; 
+                switchView = id; 
+                tableViewDoubleClick = id; 
+                toggleArtwork = id; 
+                toggleClones = id; 
+                visitWebsite = id; 
+            }; 
+            CLASS = "MAME_Library_AppDelegate"; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                artworkView = NSView; 
+                artworkViewPlaceHolder = NSView; 
+                availableGamesArrayController = NSArrayController; 
+                collectionsArrayController = NSArrayController; 
+                collectionsTreeController = NSTreeController; 
+                contentView = NSView; 
+                contentViewPlaceHolder = NSView; 
+                debugWindow = NSWindow; 
+                defaultsController = NSUserDefaultsController; 
+                gamesArrayController = NSArrayController; 
+                gridHeaderView = MLHeaderView; 
+                imagesTableColumn = NSTableColumn; 
+                inspectorPanel = NSPanel; 
+                myRatingIndicator = NSLevelIndicator; 
+                outlineViewDragController = MLOutlineViewDragController; 
+                photoSizeSlider = NSSlider; 
+                photoView = MUPhotoView; 
+                preferencesController = MLPreferencesController; 
+                scrollView = NSScrollView; 
+                showAllGamesMenuItem = NSMenuItem; 
+                showAvailableGamesMenuItem = NSMenuItem; 
+                showPlayableGamesMenuItem = NSMenuItem; 
+                sortGamesMenu = NSMenu; 
+                sourceListSplitView = KFSplitView; 
+                sourceOutlineView = NSView; 
+                sourceOutlineViewPlaceHolder = NSView; 
+                sourceView = NSView; 
+                sourceViewPlaceHolder = NSView; 
+                splitView = KFSplitView; 
+                switchViewMenuItem = NSMenuItem; 
+                tabView = NSTabView; 
+                tableView = NSTableView; 
+                toggleClonesMenuItem = NSMenuItem; 
+                viewModeMatrix = NSMatrix; 
+                window = NSWindow; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            CLASS = MLArtworkView; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {availableGamesController = NSArrayController; }; 
+            SUPERCLASS = NSImageView; 
+        }, 
+        {CLASS = MLCheckboxButton; LANGUAGE = ObjC; SUPERCLASS = NSButton; }, 
+        {CLASS = MLCheckboxButtonCell; LANGUAGE = ObjC; SUPERCLASS = NSButtonCell; }, 
+        {
+            CLASS = MLGamesTableView; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {availableGamesArrayController = NSArrayController; }; 
+            SUPERCLASS = NSTableView; 
+        }, 
+        {CLASS = MLHeaderView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
+        {CLASS = MLHeaderViewButtonCell; LANGUAGE = ObjC; SUPERCLASS = NSButtonCell; }, 
+        {CLASS = MLMatrix; LANGUAGE = ObjC; SUPERCLASS = NSMatrix; }, 
+        {CLASS = MLOutlineView; LANGUAGE = ObjC; SUPERCLASS = NSOutlineView; }, 
+        {
+            ACTIONS = {addNewCollection = id; addNewFolder = id; addNewSmartCollection = id; }; 
+            CLASS = MLOutlineViewDragController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                collectionsArrayController = NSArrayController; 
+                groupTreeControl = NSTreeController; 
+                treeTable = NSOutlineView; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            ACTIONS = {setMAMEPath = id; setROMsPath = id; setScreenShotsPath = id; }; 
+            CLASS = MLPreferencesController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                ROMsPathTextField = NSTextField; 
+                mamePathTextField = NSTextField; 
+                screenShotsTextField = NSTextField; 
+            }; 
+            SUPERCLASS = NSWindowController; 
+        }, 
+        {CLASS = MLSlider; LANGUAGE = ObjC; SUPERCLASS = NSSlider; }, 
+        {CLASS = MLSourceListSplitView; LANGUAGE = ObjC; SUPERCLASS = KFSplitView; }, 
+        {CLASS = MLTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
+        {CLASS = MLToolbarBackgroundView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
+        {
+            CLASS = MLTreeController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {outlineView = NSOutlineView; }; 
+            SUPERCLASS = NSTreeController; 
+        }, 
+        {
+            CLASS = MUPhotoView; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {delegate = id; }; 
+            SUPERCLASS = NSView; 
+        }, 
+        {CLASS = NSLevelIndicator; LANGUAGE = ObjC; SUPERCLASS = NSControl; }, 
+        {CLASS = NSObject; LANGUAGE = ObjC; }, 
+        {CLASS = PolishedWindow; LANGUAGE = ObjC; SUPERCLASS = NSWindow; }, 
+        {CLASS = SCRFooterView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
+        {
+            CLASS = SCRSplitViewResizer; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {splitView = NSSplitView; }; 
+            SUPERCLASS = NSView; 
+        }, 
+        {
+            ACTIONS = {checkForUpdates = id; }; 
+            CLASS = SUUpdater; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = SourceListTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
+        {
+            CLASS = "_NSArrayControllerTreeNode"; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = "_NSControllerTreeProxy"; LANGUAGE = ObjC; SUPERCLASS = NSObject; }
+    ); 
+    IBVersion = 1; 
+}
