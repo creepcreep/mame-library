@@ -1,0 +1,53 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {
+                export = id; 
+                findNewRoms = id; 
+                findScreenshots = id; 
+                forceFetch = id; 
+                import = id; 
+                importFromMAME = id; 
+                launchSelectedGame = id; 
+                revealInFinder = id; 
+                saveAction = id; 
+                setGamesControllerPredicate = id; 
+                setGamesControllerSortDescriptors = id; 
+                showDebugWindow = id; 
+                sortAscending = id; 
+                sortDescending = id; 
+                switchView = id; 
+                tableViewDoubleClick = id; 
+                toggleClones = id; 
+            }; 
+            CLASS = "MAME_Library_AppDelegate"; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                availableGamesArrayController = NSArrayController; 
+                debugWindow = NSWindow; 
+                defaultsController = NSUserDefaultsController; 
+                gamesArrayController = NSArrayController; 
+                gridHeaderView = MLHeaderView; 
+                imagesTableColumn = NSTableColumn; 
+                inspectorPanel = NSPanel; 
+                myRatingIndicator = NSLevelIndicator; 
+                photoSizeSlider = NSSlider; 
+                photoView = MUPhotoView; 
+                showAllGamesMenuItem = NSMenuItem; 
+                showAvailableGamesMenuItem = NSMenuItem; 
+                showPlayableGamesMenuItem = NSMenuItem; 
+                sortGamesMenu = NSMenu; 
+                switchViewMenuItem = NSMenuItem; 
+                tabView = NSTabView; 
+                tableView = NSTableView; 
+                toggleClonesMenuItem = NSMenuItem; 
+                viewModeMatrix = NSMatrix; 
+                window = NSWindow; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = NSLevelIndicator; LANGUAGE = ObjC; SUPERCLASS = NSControl; }
+    ); 
+    IBVersion = 1; 
+}

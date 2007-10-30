@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>key</key>
+		<string>cloneof</string>
+		<key>title</key>
+		<string>Clone of</string>
+		<key>visible</key>
+		<false/>
+	</dict>
+	<dict>
+		<key>key</key>
+		<string>dateadded</string>
+		<key>title</key>
+		<string>Date Added</string>
+		<key>visible</key>
+		<false/>
+	</dict>
+	<dict>
+		<key>key</key>
+		<string>desc</string>
+		<key>title</key>
+		<string>Title</string>
+		<key>visible</key>
+		<true/>
+		<key>selector</key>
+		<string>compareLikeiTunes:</string>
+	</dict>
+	<dict>
+		<key>key</key>
+		<string>lastplayed</string>
+		<key>title</key>
+		<string>Last Played</string>
+		<key>visible</key>
+		<true/>
+	</dict>
+	<dict>
+		<key>key</key>
+		<string>manufacturer</string>
+		<key>title</key>
+		<string>Manufacturer</string>
+		<key>visible</key>
+		<true/>
+		<key>selector</key>
+		<string>localizedCaseInsensitiveCompare:</string>				
+	</dict>
+	<dict>
+		<key>key</key>
+		<string>name</string>
+		<key>title</key>
+		<string>ROM Name</string>
+		<key>visible</key>
+		<false/>
+		<key>selector</key>
+		<string>localizedCaseInsensitiveCompare:</string>		
+	</dict>
+	<dict>
+		<key>key</key>
+		<string>playcount</string>
+		<key>title</key>
+		<string>Play Count</string>
+		<key>visible</key>
+		<true/>
+	</dict>
+	<dict>
+		<key>key</key>
+		<string>rating</string>
+		<key>title</key>
+		<string>Rating</string>
+		<key>visible</key>
+		<true/>
+	</dict>
+	<dict>
+		<key>key</key>
+		<string>runnable</string>
+		<key>title</key>
+		<string>Runnable</string>
+		<key>visible</key>
+		<true/>
+	</dict>
+	<dict>
+		<key>key</key>
+		<string>year</string>
+		<key>title</key>
+		<string>Year</string>
+		<key>visible</key>
+		<true/>		
+	</dict>
+</array>
+</plist>

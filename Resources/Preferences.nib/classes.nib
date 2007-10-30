@@ -1,0 +1,17 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {setMAMEPath = id; setROMsPath = id; setScreenShotsPath = id; }; 
+            CLASS = MLPreferencesController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                mosxPopUpButton = NSPopUpButton; 
+                romsPopUpButton = NSPopUpButton; 
+                screenshotsPopUpButton = NSPopUpButton; 
+            }; 
+            SUPERCLASS = NSWindowController; 
+        }
+    ); 
+    IBVersion = 1; 
+}

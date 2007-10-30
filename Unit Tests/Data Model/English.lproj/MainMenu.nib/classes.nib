@@ -1,0 +1,19 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {openXMLFile = id; saveAction = id; }; 
+            CLASS = "Data_Model_AppDelegate"; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {parser = MAMEXMLParser; textView = NSTextView; window = NSWindow; }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            CLASS = MAMEXMLParser; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {"_progressWindow" = NSWindow; }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}

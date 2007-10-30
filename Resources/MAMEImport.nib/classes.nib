@@ -1,0 +1,13 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {getXMLFromMAME = id; saveAction = id; }; 
+            CLASS = MAMEXMLParser; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {"_progressWindow" = NSWindow; }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}

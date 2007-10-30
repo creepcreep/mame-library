@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>limit</key>
+		<integer>25</integer>
+		<key>predicate</key>
+		<string>lastplayed != nil</string>
+		<key>sortBy</key>
+		<string>lastplayed</string>
+		<key>sortDescending</key>
+		<true/>
+		<key>title</key>
+		<string>Recently Played</string>
+	</dict>
+	<dict>
+		<key>limit</key>
+		<integer>25</integer>
+		<key>predicate</key>
+		<string>rating > 4</string>
+		<key>sortBy</key>
+		<string>lastplayed</string>
+		<key>sortDescending</key>
+		<true/>
+		<key>title</key>
+		<string>Top Rated</string>
+	</dict>	
+	<dict>
+		<key>predicate</key>
+		<string>year &gt; CAST(-645926400, "NSDate") AND year &lt; CAST(-338342400, "NSDate")</string>
+		<key>title</key>
+		<string>80's Games</string>
+	</dict>	
+	<dict>
+		<key>predicate</key>
+		<string>year &gt; CAST(-338342400, "NSDate") AND year &lt; CAST(-30758400, "NSDate")</string>
+		<key>title</key>
+		<string>90's Games</string>
+	</dict>	
+</array>
+</plist>

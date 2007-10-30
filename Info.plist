@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>${EXECUTABLE_NAME}</string>
+	<key>CFBundleIconFile</key>
+	<string>MAME Library</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.randomsequence.mame_library</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>${PRODUCT_NAME}</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.7α</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>159</string>
+	<key>NSMainNibFile</key>
+	<string>MainMenu</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>SUFeedURL</key>
+	<string>http://www.randomsequence.com/software/mame-library/appcast/</string>
+	<key>SUExpectsDSASignatureKey</key>
+	<true/>
+	<key>SUPublicDSAKey</key>
+	<string>-----BEGIN PUBLIC KEY-----
+	MIIDOzCCAi0GByqGSM44BAEwggIgAoIBAQCNh+/W7x9wPhu454h8/QsHg9mvukkt
+	WGhO1ZOlfT6mmV4T/FfnhEq7TTbh2WunP5HXH5+9Obrkw0JEVu4iu/bXpKyG2U/9
+	vtw+kHY57MOrn3l/SMRi/hwSvUZR1f1oqyqd5RR5qC0bwBzfESgpU02ZSpD50VDo
+	xdFUIogjcZ70up8QRopM0kvXomoZYEgSxAEz9N/xCVqj3yK+qyKlYUTVzNl64/Er
+	WsUB37bfKAviUt7vS/HpyYPpLKYN0QrfkdeAZN71kiajJcmqGDCEOcqhWIkMkmrF
+	1Syi2YkpjLMs/bzKAyxs9eGlQtm0N86TaQIh2MFa9siX6iFtAVLvGI9FAhUApUSW
+	esznJzLPzo5pMfZJJkdvMTMCggEAOD+kJB9HiXMEGIJFookckjCT2Ns8Sp9XspE7
+	OZrU2IGgbBCS+GZlYQlK48hiVIckoCbyh+YE8ZkCwnaRDhX9E1x0YN1C0sT1vBi7
+	Jah7h82rTkcTGoV1iOk/ke/edxOavwTgtPSrTJ+e27tBzCD+Tc3XAK1oeHvKBCnY
+	lWHZ1SgVsWwQ/Rl8wLyVNu3mePQvf3z9T8evxFAvPWf2CTZAEdzFywdcsOEgjCfJ
+	ZJNbjFVheRl77vfukjytTAx0DLyX96yCc9JkpS2LJihiesCakXdvfnUC+l7cgfoQ
+	64jm8azgHrVwKC/Ut+fRPp7qjbWrdH06kBbb86voxybkGF7FJAOCAQYAAoIBAQCJ
+	X22Bn3MsLtWLDvRS14/4xXUrOnK36j7W4xlcsavDdYdB8WHXHRj5Yf1G0UYnnjPA
+	nuYFrULEoENhpGrk7uTxmiavFb/dGKz4D9djyZ98hjiFssnlPK3mcUtS1PoCNDre
+	Elv8KtA25KwPuyDZFmG6bRrU+ltyJKJo8JqzkZEQ4bdo+JdEkzsf42RKwG+/2N8K
+	G0KIKURkhQ2/1omN9lbTtssKnLLzeaq6U+/R0Q63Jnp6Y+zFCy0p8iDmMm+ChBAW
+	XITkXTr6cXTHiIqpINZoxUeMNwliUOTk2sOitR8i+xi/1RrKNfwupTn6TUQ59NgN
+	erRi7077/mvPz2V8ZUFd
+	-----END PUBLIC KEY-----
+	</string>
+</dict>
+</plist>
