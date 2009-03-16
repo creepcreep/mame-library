@@ -6,8 +6,8 @@
 //  Copyright 2007 __MyCompanyName__. All rights reserved.
 //
 
+#import <Quartz/Quartz.h>
 #import <Cocoa/Cocoa.h>
-
 
 @interface MLGame : NSManagedObject {
 	NSImage *_photo;
@@ -22,4 +22,9 @@
 - (NSDictionary *)userGameInfo;
 - (NSData *)pasteboardData;
 - (NSImage *)photo;
+
+- (NSDictionary *)metadataDictionary;
+- (NSString *)metadataPath;
+- (void)saveMetadata;
+- (void)deleteMetadata;
 @end

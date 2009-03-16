@@ -22,3 +22,9 @@
 #define MLHistoryAppcastURL @"http://www.arcade-history.com/dats/appcast.php"
 
 #define MLLastHistoryCheckTimeKey @"MLLastHistoryCheckTime"
+
+#define MLCurrentSortKeyKey @"MLCurrentSortKey"
+#define MLCurrentSortDescendingKey @"MLCurrentSortDescending"
+
+#define MLMetadataPathExtension @"rsmlmetadata"
+#define MLMetadataPath @"~/Library/Caches/Metadata/MAME Library/"

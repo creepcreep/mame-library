@@ -326,7 +326,7 @@
 	[[NSUserDefaults standardUserDefaults] setValue:[[[NSBundle mainBundle] localizedInfoDictionary] objectForKey:@"CFBundleVersion"] forKey:@"MLLastMLImportVersion"];
 	
 	if (nil != _userInfo) {
-		[self importCollectionsFromUserinfo:_userInfo];
+		// [self importCollectionsFromUserinfo:_userInfo];
 	}
 	
 	[_userInfo release];

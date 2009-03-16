@@ -1,17 +1,51 @@
-{
-    IBClasses = (
-        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
-        {
-            ACTIONS = {setMAMEPath = id; setROMsPath = id; setScreenShotsPath = id; }; 
-            CLASS = MLPreferencesController; 
-            LANGUAGE = ObjC; 
-            OUTLETS = {
-                mosxPopUpButton = NSPopUpButton; 
-                romsPopUpButton = NSPopUpButton; 
-                screenshotsPopUpButton = NSPopUpButton; 
-            }; 
-            SUPERCLASS = NSWindowController; 
-        }
-    ); 
-    IBVersion = 1; 
-}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IBClasses</key>
+	<array>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
+				<key>setMAMEPath</key>
+				<string>id</string>
+				<key>setROMsPath</key>
+				<string>id</string>
+				<key>setScreenShotsPath</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>MLPreferencesController</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>OUTLETS</key>
+			<dict>
+				<key>mosxPopUpButton</key>
+				<string>NSPopUpButton</string>
+				<key>romsPopUpButton</key>
+				<string>NSPopUpButton</string>
+				<key>screenshotsPopUpButton</key>
+				<string>NSPopUpButton</string>
+			</dict>
+			<key>SUPERCLASS</key>
+			<string>NSWindowController</string>
+		</dict>
+		<dict>
+			<key>CLASS</key>
+			<string>FirstResponder</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>CLASS</key>
+			<string>NSObject</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+		</dict>
+	</array>
+	<key>IBVersion</key>
+	<string>1</string>
+</dict>
+</plist>

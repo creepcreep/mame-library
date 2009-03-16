@@ -8,6 +8,7 @@
 
 #import "MLGame.h"
 #import "MAME_Library_AppDelegate.h"
+#import "constants.h"
 
 @implementation MLGame
 
@@ -209,14 +210,89 @@
 //			[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"MLRomPathFound" object:self]];
 //		}
 		[self setValue:romPath forKey:@"romPath"];
+		[self saveMetadata];
+		
 		return TRUE;
 	} else {
 //		NSLog(@"Cannot find my ROM: %@",[self valueForKey:@"name"]);
 		[self setValue:nil forKey:@"romPath"];
+		[self deleteMetadata];
 	}
 	
 	return FALSE;
 
 }
+
+#pragma mark -
+#pragma mark Spotlight Metadata
+
+- (NSDictionary *)metadataDictionary
+{
+	return [NSDictionary dictionaryWithObjectsAndKeys:	
+			[self valueForKey:@"desc"],kMDItemDisplayName,			
+														nil];
+}
+
+- (void)saveMetadata
+{
+	NSString *metadataPath = [self metadataPath]; 
+	[[self metadataDictionary] writeToFile:metadataPath atomically:NO];	
+
+	[[NSWorkspace sharedWorkspace] setIcon:[self photo] forFile:metadataPath options:0];
+	
+}
+
+- (NSString *)metadataPath
+{
+	NSString *metadataDir = [MLMetadataPath stringByExpandingTildeInPath];			
+	return [[metadataDir stringByAppendingPathComponent:[self valueForKey:@"name"]] stringByAppendingPathExtension:MLMetadataPathExtension];
+}
+
+- (void)deleteMetadata
+{
+	[[NSFileManager defaultManager] removeFileAtPath:[self metadataPath] handler:nil];
+}
+
+
+// The required methods of the IKImageBrowserItem protocol.
+#pragma mark -
+#pragma mark IKImageBrowserItem protocol
+
+// -------------------------------------------------------------------------
+//	imageRepresentationType:
+//
+//	Set up the image browser to use a path representation.
+// -------------------------------------------------------------------------
+- (NSString*)imageRepresentationType
+{
+	return IKImageBrowserNSImageRepresentationType;
+}
+
+// -------------------------------------------------------------------------
+//	imageRepresentation:
+//
+//	Give the path representation to the image browser.
+// -------------------------------------------------------------------------
+- (id)imageRepresentation
+{
+	return [self photo];
+}
+
+// -------------------------------------------------------------------------
+//	imageUID:
+//
+//	Use the absolute file path as the identifier.
+// -------------------------------------------------------------------------
+- (NSString*)imageUID
+{
+    return [[[self objectID] URIRepresentation] absoluteString]; 
+}
+
+- (NSString *) imageTitle
+{
+	return [self valueForKey:@"desc"];
+}
+
+
 
 @end

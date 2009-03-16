@@ -30,24 +30,26 @@
 	NSDictionary *mosxPrefs = [NSDictionary dictionaryWithContentsOfFile:[@"~/Library/Preferences/net.mame.mameosx.plist" stringByExpandingTildeInPath]];	
 //	NSLog(@"mosxPrefs: %@",mosxPrefs);
 
-	if (nil == [[NSUserDefaults standardUserDefaults] stringForKey:@"MLMAMEPath"]) {
-		[[NSUserDefaults standardUserDefaults] setObject:[[NSWorkspace sharedWorkspace] absolutePathForAppBundleWithIdentifier:@"net.mame.mameosx"] forKey:@"MLMAMEPath"];
+	NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+	
+	if (nil == [ud stringForKey:@"MLMAMEPath"]) {
+		[ud setObject:[[NSWorkspace sharedWorkspace] absolutePathForAppBundleWithIdentifier:@"net.mame.mameosx"] forKey:@"MLMAMEPath"];
 	}
-	if (nil == [[NSUserDefaults standardUserDefaults] stringForKey:@"MLROMsPath"]) {
+	if (nil == [ud stringForKey:@"MLROMsPath"]) {
 		if (nil != mosxPrefs && nil != [mosxPrefs valueForKey:@"RomPath"]) {
-			[[NSUserDefaults standardUserDefaults] setObject:[mosxPrefs valueForKey:@"RomPath"] forKey:@"MLROMsPath"];
+			[ud setObject:[mosxPrefs valueForKey:@"RomPath"] forKey:@"MLROMsPath"];
 		} else {
-			[[NSUserDefaults standardUserDefaults] setObject:[@"~/Library/Application Support/Mame OS X/ROMs" stringByExpandingTildeInPath] forKey:@"MLROMsPath"];		
+			[ud setObject:[@"~/Library/Application Support/Mame OS X/ROMs" stringByExpandingTildeInPath] forKey:@"MLROMsPath"];		
 		}		
 	}
-	if (nil == [[NSUserDefaults standardUserDefaults] stringForKey:@"MLScreenShotsPath"]) {
-		[[NSUserDefaults standardUserDefaults] setObject:[@"~/Library/Application Support/Mame OS X/Screenshots" stringByExpandingTildeInPath] forKey:@"MLScreenShotsPath"];
+	if (nil == [ud stringForKey:@"MLScreenShotsPath"]) {
+		[ud setObject:[@"~/Library/Application Support/Mame OS X/Screenshots" stringByExpandingTildeInPath] forKey:@"MLScreenShotsPath"];
 	}
-	if (nil == [[NSUserDefaults standardUserDefaults] objectForKey:@"MLPhotoViewBackgroundColor"]) {
-		[[NSUserDefaults standardUserDefaults] setObject:[NSArchiver archivedDataWithRootObject:[NSColor colorWithCalibratedHue:0.0 saturation:0.0 brightness:0.93 alpha:1]] forKey:@"MLPhotoViewBackgroundColor"];
+	if (nil == [ud objectForKey:@"MLPhotoViewBackgroundColor"]) {
+		[ud setObject:[NSArchiver archivedDataWithRootObject:[NSColor colorWithCalibratedHue:0.0 saturation:0.0 brightness:0.93 alpha:1]] forKey:@"MLPhotoViewBackgroundColor"];
 	}
-	if (nil == [[NSUserDefaults standardUserDefaults] objectForKey:@"MLPhotoSize"]) {
-		[[NSUserDefaults standardUserDefaults] setFloat:100.0 forKey:@"MLPhotoSize"];
+	if (nil == [ud objectForKey:@"MLPhotoSize"]) {
+		[ud setFloat:100.0 forKey:@"MLPhotoSize"];
 	}		
 	
 	missingImage = [[NSImage alloc] initWithContentsOfFile:[[NSBundle mainBundle] pathForImageResource:@"test-signal"]];
@@ -60,7 +62,7 @@
 
 }
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification 
+- (void)applicationWillFinishLaunching:(NSNotification *)aNotification 
 {			
 
 	NSTimeInterval interval = 3600*24;
@@ -76,7 +78,9 @@
 		[self checkForHistoryDatUpdates:nil];
 	}
 
-	if (![[NSFileManager defaultManager] fileExistsAtPath:[[NSUserDefaults standardUserDefaults] stringForKey:@"MLMAMEPath"]]) {
+	NSFileManager *fileManager = [NSFileManager defaultManager];			
+	
+	if (![fileManager fileExistsAtPath:[[NSUserDefaults standardUserDefaults] stringForKey:@"MLMAMEPath"]]) {
 		// prompt the user to find MAME OS X
 			NSAlert *alert = [[[NSAlert alloc] init] autorelease];
 			[alert addButtonWithTitle:@"OK"];
@@ -96,8 +100,47 @@
 
 		//NSLog(@"Can't find MAME OS X anywhere!");
 	}
-
+	
+	NSString *metadataDir = [MLMetadataPath stringByExpandingTildeInPath];    
+	if (![fileManager fileExistsAtPath: metadataDir]) {
+		[fileManager createDirectoryAtPath:metadataDir attributes:nil];
+		[NSThread detachNewThreadSelector:@selector(rebuildMetadata) toTarget:self withObject:nil];
+	}	
+	
 	[self setupAndShowMainWindow];		
+}
+
+- (void)rebuildMetadata
+{		
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+		
+	NSFileManager *fileManager = [NSFileManager defaultManager];				
+	NSEnumerator *filenamesEnu = [[fileManager directoryContentsAtPath:MLMetadataPath] objectEnumerator];
+	NSString *path;
+	while (path = [filenamesEnu nextObject]) {
+		if ([[path pathExtension] isEqualToString:MLMetadataPathExtension]) {
+			[fileManager removeFileAtPath:path handler:nil];
+		}
+	}
+	
+	// Each thread needs it's own managedObjectContext
+	NSManagedObjectContext *threadContext = [[NSManagedObjectContext alloc] init];
+	[threadContext setPersistentStoreCoordinator: [self persistentStoreCoordinator]];
+	[threadContext setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
+	
+	NSFetchRequest *request = [[self managedObjectModel] fetchRequestTemplateForName:@"gamesWithRomPath"];
+	NSError *error = nil;
+	NSArray *games = [threadContext executeFetchRequest:request error:&error];				
+	
+	NSEnumerator *availableGamesEnu = [games objectEnumerator];
+	MLGame *nextGame;
+	while (nextGame = [availableGamesEnu nextObject]) {
+		[nextGame saveMetadata];
+	}
+	
+	[threadContext release];
+	
+	[pool drain];
 }
 
 - (void)setupAndShowMainWindow
@@ -124,18 +167,31 @@
 	[sourceListSplitView setSubview:artworkViewPlaceHolder isCollapsed:[[NSUserDefaults standardUserDefaults] boolForKey:@"MLHideArtworkView"]];			
 
 	
-	[photoView setDelegate:self];
-	[photoView setPhotoHorizontalSpacing:18.0];
-	[photoView setPhotoVerticalSpacing:18.0];	
-	
-	[photoView setUseBorderSelection:FALSE];
-	[photoView setUseShadowSelection:TRUE];	
-
+	[browserView setDelegate:self];
+	[browserView setDataSource:self];	
 	[myRatingIndicator setContinuous:TRUE];
-
-	[photoView setUseOutlineBorder:FALSE];			
+	
 	NSColor *bgColor = [NSUnarchiver unarchiveObjectWithData:[[NSUserDefaults standardUserDefaults] objectForKey:@"MLPhotoViewBackgroundColor"]];
-	[photoView setBackgroundColor:bgColor];
+	
+	NSColor *textColor = [NSColor blackColor];
+	if ([[bgColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace] brightnessComponent] < 0.5) {
+		textColor = [NSColor whiteColor];
+	}
+
+	NSShadow *textShadow = [[[NSShadow alloc] init] autorelease];
+	[textShadow setShadowOffset:NSMakeSize(0,-3.0)];
+	[textShadow setShadowBlurRadius:2.0];	
+	
+	NSFont *textFont = [NSFont boldSystemFontOfSize:11.0];
+
+	NSDictionary *textColorDict = [NSDictionary dictionaryWithObjectsAndKeys:textColor,NSForegroundColorAttributeName,textShadow,NSShadowAttributeName,textFont,NSFontAttributeName,nil];
+	NSDictionary *textHighlightColorDict = [NSDictionary dictionaryWithObjectsAndKeys:[NSColor whiteColor],NSForegroundColorAttributeName,textFont,NSFontAttributeName,nil];
+
+	[browserView setValue:textHighlightColorDict forKey:IKImageBrowserCellsHighlightedTitleAttributesKey];
+	[browserView setValue:textColorDict forKey:IKImageBrowserCellsTitleAttributesKey];		
+	//[browserView setCellSize:NSMakeSize(100,100)];
+
+	[browserView setValue:bgColor forKey:IKImageBrowserBackgroundColorKey];
 	[scrollView setBackgroundColor:bgColor];
 //	[photoView bind:@"backgroundColor" toObject:defaultsController withKeyPath:@"values.MLPhotoViewBackgroundColor" options:nil];	
 
@@ -208,9 +264,6 @@
 	
 	[gamesArrayController setSortDescriptors:[NSArray arrayWithObject:romNameDescriptor]];
 
-    [photoView bind:@"photosArray" toObject:availableGamesArrayController withKeyPath:@"arrangedObjects" options:nil];	
-	[photoView bind:@"photoSize" toObject:defaultsController withKeyPath:@"values.MLPhotoSize" options:nil];
-
 	[gridHeaderView bind:@"sortDescending" toObject:self withKeyPath:@"sortDescending" options:nil];	
 	[gridHeaderView bind:@"orderByKey" toObject:self withKeyPath:@"sortKey" options:nil];	
 	[gridHeaderView bind:@"orderByKeyTitle" toObject:self withKeyPath:@"sortKeyTitle" options:nil];		
@@ -221,6 +274,7 @@
 		[window setPreferredBackingLocation:1];		// NSWindowBackingLocationVideoMemory == 1
 	}
 	
+	[window setContentBorderThickness:34.0 forEdge:NSMinYEdge];
 	[window makeKeyAndOrderFront:self];
 		
 //	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(forceFetch:) name:@"MLRomPathFound" object:nil];	
@@ -228,7 +282,7 @@
 	if (nil == _parser || ![[_parser valueForKey:@"importing"] boolValue]) {
 		NSString *mameVersion;
 		if (mameVersion = [self mameVersionString]) {
-			double d = atof([mameVersion cString]);		
+			double d = atof([mameVersion cStringUsingEncoding:NSASCIIStringEncoding]);		
 			if (d < 0.117) {
 				// User needs a newer MAME
 				NSLog(@"Newer version of MAME OS X Required");
@@ -241,6 +295,37 @@
 				}
 			}
 	//		[[NSUserDefaults standardUserDefaults] setValue:mameVersion forKey:@"MLLastMAMEVersion"];
+		}
+	}	
+}
+
+// Opens metadata files sent from Spotlight
+- (void)application:(NSApplication *)sender openFiles:(NSArray *)filenames
+{
+	NSEnumerator *filenamesEnu = [filenames objectEnumerator];
+	NSString *filename;
+	while (filename = [filenamesEnu nextObject]) {
+		if ([[filename pathExtension] isEqualToString:MLMetadataPathExtension]) {
+			// NSLog(@"open %@",[[filename lastPathComponent] stringByDeletingPathExtension]);
+			
+			NSFetchRequest *request = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"gameWithName" substitutionVariables:[NSDictionary dictionaryWithObject:[[filename lastPathComponent] stringByDeletingPathExtension] forKey:@"name"]];
+			NSError *error = nil;
+			NSArray *games = [[self managedObjectContext] executeFetchRequest:request error:&error];								
+			
+			if ([games count] > 0) {
+				MLGame *game = [games objectAtIndex:0];
+				// select the Library item
+				[collectionsTreeController setSelectionIndexPath:[NSIndexPath indexPathWithIndex:0]];
+				int index = [[availableGamesArrayController arrangedObjects] indexOfObjectIdenticalTo:game];
+				
+				// NSLog(@"index: %i",index);
+				
+				if (index != NSNotFound) {
+					[browserView setSelectionIndexes:[NSIndexSet indexSetWithIndex:index] byExtendingSelection:NO];									
+					[browserView scrollIndexToVisible:index];
+					[[browserView window] makeFirstResponder:browserView];
+				}
+			}
 		}
 	}
 }
@@ -409,7 +494,7 @@
 	} else {
 		sd = [[[NSSortDescriptor alloc] initWithKey:[self valueForKey:@"sortKey"] ascending:![[self valueForKey:@"sortDescending"] boolValue]] autorelease];	
 	}
-
+	
 	[self setValue:[NSArray arrayWithObject:sd] forKey:@"sortDescriptors"];
 }
 
@@ -620,6 +705,31 @@
 }
 
 #pragma mark -
+// Editing Smart Collections
+#pragma mark Editing Smart Collections
+
+- (IBAction)editSmartCollection:(id)sender {
+	
+	if (nil == predicateEditor) {
+		[NSBundle loadNibNamed:@"Collection Editor" owner:self];
+	}
+	
+	predicateEditorModalSession = [NSApp beginModalSessionForWindow:[predicateEditor window]];
+	[NSApp runModalSession:predicateEditorModalSession];
+	
+}	
+
+- (IBAction)closeCollectionEditor:(id)sender
+{
+	[NSApp endModalSession:predicateEditorModalSession];
+	[[predicateEditor window] close];
+	
+	if ([sender tag] == 1) {
+		NSLog(@"predicate: %@",[predicateEditor objectValue]);		
+	}
+}
+
+#pragma mark -
 // Misc Menus Items
 #pragma mark Misc Menus Items
 
@@ -633,7 +743,7 @@
 
 }
 
-- (IBAction)findScreenshots:sender {
+- (IBAction)findScreenshots:(id)sender {
 	NSArray *selectedObjects = [availableGamesArrayController selectedObjects];
 	if ([selectedObjects count] == 0) {
 		selectedObjects = [availableGamesArrayController arrangedObjects];
@@ -641,11 +751,22 @@
 	
 	[selectedObjects makeObjectsPerformSelector:@selector(searchForScreenShot)];
 	[gamesArrayController rearrangeObjects];
-	[photoView display];
+	[browserView display];
 }
 
-- (IBAction)findNewRoms:sender {
+- (IBAction)findNewRoms:(id)sender {
 
+	// empty the metadata folder
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	NSArray *metadataFolderContents = [fileManager directoryContentsAtPath:MLMetadataPath];
+	NSEnumerator *metadataFolderContentsEnu = [metadataFolderContents objectEnumerator];
+	NSString *path;
+	while (path = [metadataFolderContentsEnu nextObject]) {
+		if ([[path pathExtension] isEqualToString:MLMetadataPathExtension]) {
+			[fileManager removeFileAtPath:path handler:nil];
+		}
+	}
+	
 	NSArray *selectedObjects;
 
 	selectedObjects = [availableGamesArrayController selectedObjects];
@@ -657,7 +778,7 @@
 	[selectedObjects makeObjectsPerformSelector:@selector(searchForROM)];
 	
 	[gamesArrayController rearrangeObjects];
-	[photoView display];
+	[browserView display];
 
 
 //	NSString *ROMPath = [[NSUserDefaults standardUserDefaults] stringForKey:@"MLROMsPath"];
@@ -725,6 +846,15 @@
 		[NSBundle loadNibNamed:@"Inspector" owner:self];
 	}
 	[inspectorPanel orderFront:sender];
+}
+
+- (IBAction)toggleBrowserViewTitles:(id)sender {
+	if ([browserView cellsStyleMask] & 4) {
+		[browserView setCellsStyleMask:([browserView cellsStyleMask] & 11)];
+		return;
+	}
+	
+	[browserView setCellsStyleMask:([browserView cellsStyleMask] | 4)];	
 }
 
 - (IBAction) showDebugWindow:(id)sender {
@@ -1014,6 +1144,15 @@
 	return games;	
 }
 
+- (NSArray *)gamesWithRomPath
+{
+	NSFetchRequest *request = [[self managedObjectModel] fetchRequestTemplateForName:@"gamesWithRomPath"];
+	NSError *error = nil;
+	NSArray *games = [[self managedObjectContext] executeFetchRequest:request error:&error];		
+	
+	return games;		
+}
+
 - (void)getGameTitles {
 	// NSString *list = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"list" ofType:@"txt"]];
 		
@@ -1033,38 +1172,37 @@
 }
 
 #pragma mark -
+// IKImageBrowserView methods
+#pragma mark IKImageBrowserView delegate
+
+- (void) imageBrowser:(IKImageBrowserView *) aBrowser cellWasDoubleClickedAtIndex:(NSUInteger) index;
+{
+	NSArray *availableGames = [availableGamesArrayController arrangedObjects];	
+	MLGame *game = [availableGames objectAtIndex:index];
+	
+	[self launchGame:game];
+}
+
+- (NSUInteger) imageBrowser:(IKImageBrowserView *) aBrowser writeItemsAtIndexes:(NSIndexSet *) itemIndexes toPasteboard:(NSPasteboard *)pasteboard;
+{
+	NSArray *availableGames = [availableGamesArrayController arrangedObjects];
+	NSArray *draggedGames = [availableGames objectsAtIndexes:itemIndexes];
+	[pasteboard declareTypes:[NSArray arrayWithObject:MLGamesPasteboardType] owner:self];
+	[pasteboard setData:[self pasteboardDataForItems:draggedGames] forType:MLGamesPasteboardType];
+	return [itemIndexes count];	
+}
+
+- (void) imageBrowser:(IKImageBrowserView *) aBrowser removeItemsAtIndexes:(NSIndexSet *) indexes;
+{
+	if ([self canRemove]) {
+		NSArray *selectedGames = [availableGamesArrayController selectedObjects];
+		[selectedCollection removeGames:selectedGames];
+	}
+}
+
+#pragma mark -
 // MUPhotoViewDelegate methods
 #pragma mark MUPhotoViewDelegate methods
-
-- (void)applicationWillBecomeActive:(NSNotification *)aNotification
-{
-	[photoView display];
-}
-
-- (BOOL)canRemove
-{
-	if ([[selectedCollection valueForKey:@"type"] intValue] != 0) {
-		return YES;
-	}
-
-	return NO;
-}
-
-- (NSIndexSet *)photoView:(MUPhotoView *)view willRemovePhotosAtIndexes:(NSIndexSet *)indexes;
-{
-	if (![self canRemove]) {
-		return [NSIndexSet indexSet];
-	}	
-	return indexes;
-}
-
-- (void)photoView:(MUPhotoView *)view didRemovePhotosAtIndexes:(NSIndexSet *)indexes;
-{
-	NSArray *selectedGames = [[availableGamesArrayController arrangedObjects] objectsAtIndexes:indexes];
-	[selectedCollection removeGames:selectedGames];
-	[self setSelectedCollection:selectedCollection];
-	[view setNeedsDisplay:YES];
-}
 
 - (NSData *)pasteboardDataForItems:(NSArray *)items
 {	
@@ -1077,44 +1215,43 @@
 	return [NSArchiver archivedDataWithRootObject:gamesPasteboardData];
 }
 
-- (NSData *)photoView:(MUPhotoView *)view pasteboardDataForPhotoAtIndex:(unsigned)index dataType:(NSString *)type
+- (void)applicationWillBecomeActive:(NSNotification *)aNotification
 {
-	if ([type isEqualToString:MLGamePasteboardType]) {
-		NSArray *availableGames = [availableGamesArrayController arrangedObjects];
-		return [[availableGames objectAtIndex:index] pasteboardData];
-	} else if ([type isEqualToString:MLGamesPasteboardType]) {
-		NSArray *selectedGames = [availableGamesArrayController selectedObjects];
-		return [self pasteboardDataForItems:selectedGames];
+	[browserView display];
+}
+
+- (BOOL)canRemove
+{
+	if ([[selectedCollection valueForKey:@"type"] intValue] != 0) {
+		return YES;
 	}
-	
-	return [NSData data];
+
+	return NO;
 }
 
-- (NSIndexSet *)selectionIndexesForPhotoView:(MUPhotoView *)view;
-{
-	return [availableGamesArrayController selectionIndexes];
-}
-
-- (void)photoView:(MUPhotoView *)view didSetSelectionIndexes:(NSIndexSet *)indexes;
-{
-	[availableGamesArrayController setSelectionIndexes:indexes];
-}
-
-
-- (NSString *)photoView:(MUPhotoView *)view photoTitleAtIndex:(unsigned)index
-{
-	NSArray *availableGames = [availableGamesArrayController arrangedObjects];
-	return [[availableGames objectAtIndex:index] valueForKey:@"desc"];
-}
-
-// double-click - run game
-- (void)photoView:(MUPhotoView *)view doubleClickOnPhotoAtIndex:(unsigned)index
-{
-	NSArray *availableGames = [availableGamesArrayController arrangedObjects];	
-	MLGame *game = [availableGames objectAtIndex:index];
-	
-	[self launchGame:game];
-}
+//- (NSData *)pasteboardDataForItems:(NSArray *)items
+//{	
+//	NSMutableArray *gamesPasteboardData = [NSMutableArray arrayWithCapacity:[items count]];
+//	NSEnumerator *selectedGamesEnu = [items objectEnumerator];
+//	MLGame *nextGame;
+//	while (nextGame = [selectedGamesEnu nextObject]) {
+//		[gamesPasteboardData addObject:[nextGame valueForKey:@"name"]];
+//	}		
+//	return [NSArchiver archivedDataWithRootObject:gamesPasteboardData];
+//}
+//
+//- (NSData *)photoView:(MUPhotoView *)view pasteboardDataForPhotoAtIndex:(unsigned)index dataType:(NSString *)type
+//{
+//	if ([type isEqualToString:MLGamePasteboardType]) {
+//		NSArray *availableGames = [availableGamesArrayController arrangedObjects];
+//		return [[availableGames objectAtIndex:index] pasteboardData];
+//	} else if ([type isEqualToString:MLGamesPasteboardType]) {
+//		NSArray *selectedGames = [availableGamesArrayController selectedObjects];
+//		return [self pasteboardDataForItems:selectedGames];
+//	}
+//	
+//	return [NSData data];
+//}
 
 - (void)launchGame:(MLGame *)game
 {
@@ -1154,7 +1291,7 @@
 // Menu Item Validation
 #pragma mark Menu Item Validation
 
-- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
 	if (menuItem == switchViewMenuItem) {
 	if ([[[tabView selectedTabViewItem] identifier] isEqual:@"table"]) {
@@ -1163,7 +1300,16 @@
 		} else {
 		[switchViewMenuItem setTitle:@"Show As List"];
 		}
-		return TRUE;		
+		return TRUE;	
+		
+	} else if ([menuItem action] == @selector(toggleBrowserViewTitles:)) {			
+		[menuItem setState:NSOffState];
+		if ([browserView cellsStyleMask] & 4) {
+			[menuItem setState:NSOnState];
+		}
+		if ([[[tabView selectedTabViewItem] identifier] isEqual:@"table"]) {
+			return FALSE;
+		}
 	} else if ([menuItem action] == @selector(revealInFinder:)) {
 		NSArray *selectedObjects;
 		if (selectedObjects = [availableGamesArrayController selectedObjects]) {
@@ -1197,6 +1343,13 @@
 		if ([[selectedCollection valueForKey:@"type"] intValue] == 1 || [[selectedCollection valueForKey:@"type"] intValue] == 2) {
 			return FALSE;
 		}
+	} else if ([menuItem action] == @selector(editSmartCollection:)) {
+		// switch the menu item off unless a smart collection is selected
+		// NSLog(@"%@ type: %@",[selectedCollection valueForKey:@"title"],[selectedCollection valueForKey:@"type"]);
+		if ([[selectedCollection valueForKey:@"type"] intValue] == 3) {
+			return TRUE;
+		}	
+		return FALSE;
 	} else if ([menuItem action] == @selector(toggleClones:)) {
 		if ([[selectedCollection valueForKey:@"showClones"] boolValue]) {
 			[menuItem setTitle:@"Hide Clones"];
@@ -1274,7 +1427,7 @@
 		if ([[nextItem description] isEqualToString:@"mamehistory"]) {
 			if (![[nextItem versionString] isEqualToString:[[NSUserDefaults standardUserDefaults] stringForKey:@"MLLastHistoryDatVersion"]]) {
 				NSLog(@"title: %@, versionString: %@, fileURL: %@",[nextItem title],[nextItem versionString],[nextItem fileURL]);
-				NSURLDownload *downloader = [[NSURLDownload alloc] initWithRequest:[NSURLRequest requestWithURL:[nextItem fileURL]] delegate:self];					
+				// NSURLDownload *downloader = [[NSURLDownload alloc] initWithRequest:[NSURLRequest requestWithURL:[nextItem fileURL]] delegate:self];					
 			}
 		}
 	}

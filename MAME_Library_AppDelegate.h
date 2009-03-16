@@ -6,9 +6,9 @@
 //  Copyright __MyCompanyName__ 2007 . All rights reserved.
 //
 
+#import <Quartz/Quartz.h>
 #import <Cocoa/Cocoa.h>
 #import <Sparkle/Sparkle.h>
-#import "MUPhotoView.h"
 
 @class MLHeaderView;
 @class MLGame;
@@ -18,6 +18,8 @@
 @class MLOutlineViewDragController;
 @class KFSplitView;
 @class MLPreferencesController;
+@class RAOperationQueue;
+
 @interface MAME_Library_AppDelegate : NSObject 
 {
     IBOutlet NSWindow *window;
@@ -33,7 +35,7 @@
 	
 	IBOutlet NSUserDefaultsController *defaultsController;
     
-    IBOutlet MUPhotoView *photoView;
+    IBOutlet IKImageBrowserView *browserView;
     IBOutlet NSSlider *photoSizeSlider;
 
     IBOutlet NSMenuItem *showAllGamesMenuItem;
@@ -70,6 +72,9 @@
 	
 	IBOutlet MLHeaderView *gridHeaderView;
 	
+	IBOutlet NSPredicateEditor *predicateEditor;
+	NSModalSession predicateEditorModalSession;
+	
 	NSNumber *_sortDescending;
 	
 	NSImage *missingImage;
@@ -102,7 +107,7 @@
 	
 	NSString *historyDownloadPath;
 	
-	NSTask *mameTask;	
+	NSTask *mameTask;
 }
 
 - (void)setupAndShowMainWindow;
@@ -113,16 +118,18 @@
 - (NSManagedObjectModel *)managedObjectModel;
 - (NSManagedObjectContext *)managedObjectContext;
 - (NSString *)cacheFolder;
+- (NSString *)applicationSupportFolder;
 
 - (NSArray *)allGamesInStore;
+- (NSArray *)gamesWithRomPath;
 
 - (BOOL)requestMAMEDataUpdate;
 
 - (IBAction)getMAMEOSX:(id)sender;
 
-- (IBAction)findNewRoms:sender;
-- (IBAction)findScreenshots:sender;
-- (IBAction)importFromMAME:sender;
+- (IBAction)findNewRoms:(id)sender;
+- (IBAction)findScreenshots:(id)sender;
+- (IBAction)importFromMAME:(id)sender;
 - (void)importFromMAMEWithUserInfo:(NSDictionary *)userinfo;
 
 - (IBAction)getInfo:sender;
@@ -149,12 +156,16 @@
 - (IBAction)setGamesControllerPredicate:(id)sender;
 - (void)setGamesPredicate;
 
+- (IBAction)editSmartCollection:(id)sender;
+- (IBAction)closeCollectionEditor:(id)sender;
+
 - (IBAction)forceFetch:(id)sender;
 - (IBAction)revealInFinder:(id)sender;
 
 - (IBAction)showFAQ:(id)sender;
 - (IBAction)showReleaseNotes:(id)sender;
 - (IBAction)visitWebsite:(id)sender;
+- (IBAction)toggleBrowserViewTitles:(id)sender;
 
 - (IBAction)import:(id)sender;
 - (IBAction)export:(id)sender;

@@ -218,7 +218,7 @@
 - (void)outlineViewItemWillCollapse:(NSNotification *)notification
 {
 	// find out if the selection is contained by the item which is collapsing. If so, set the selection to that item
-	MLCollection *collapsingCollection = [[[notification userInfo] valueForKey:@"NSObject"] observedObject];
+	MLCollection *collapsingCollection = [[[notification userInfo] valueForKey:@"NSObject"] representedObject];
 	MLCollection *selectedCollection = [[groupTreeControl selectedObjects] objectAtIndex:0];
 	MLCollection *parentCollection = [selectedCollection valueForKey:@"parent"];
 	while (nil != parentCollection) {
