@@ -25,6 +25,9 @@ static void *orderByKeyTitleBindingContext = (void *)@"orderByKeyBindingTitle";
 		[self setValue:@"Title" forKey:@"orderByKey"];		
 		
 		_attributes	= [[NSMutableDictionary dictionaryWithObject:[NSFont systemFontOfSize:10] forKey:NSFontAttributeName] retain];
+		
+		_bgColor = [[NSColor colorWithCalibratedRed:0.38f green:0.38f blue:0.38f alpha:1.0f] retain];		
+		// _bgColor = [[NSColor blueColor] retain];
     }
     return self;
 }
@@ -65,6 +68,9 @@ static void *orderByKeyTitleBindingContext = (void *)@"orderByKeyBindingTitle";
 
 	[_attributes release];
 	[_gradientImg release];
+	
+	[_bgColor release];  
+	
 	[super dealloc];
 }
 
@@ -81,16 +87,11 @@ static void *orderByKeyTitleBindingContext = (void *)@"orderByKeyBindingTitle";
 }
 
 - (void)drawRect:(NSRect)rect {
-
-//    [_gradientImg lockFocus];
-//    NSColor *bgColor = NSReadPixel(NSMakePoint(0, 0));
-//    [_gradientImg unlockFocus];
-//
-//    // Drawing code here.
-//	[bgColor set];
-//    NSRectFill(rect);	
+    // Drawing code here.
+	[_bgColor set];
+    NSRectFill(rect);	
 	
-	[_gradientImg drawInRect:rect 
+	[_gradientImg drawInRect:NSMakeRect(rect.origin.x, rect.origin.y+1.0f, rect.size.width, rect.size.height-1.0)
 				  fromRect:NSMakeRect(0, 0, 
 									  [_gradientImg size].width, 
 									  [_gradientImg size].height) 

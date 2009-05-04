@@ -11,6 +11,7 @@
 
 @interface MLHeaderView : NSView {
 	NSImage *_gradientImg;
+	NSColor *_bgColor;
 	NSString *_value;
 	NSString *_orderByKey;
 	NSString *_orderByKeyTitle;	

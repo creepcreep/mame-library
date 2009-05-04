@@ -34,8 +34,10 @@
 	_gradientImgFlipped = [[NSImage imageNamed:@"header_gradient_flipped"] retain];      
 
     [_gradientImg lockFocus];
-    _bgColor = [NSReadPixel(NSMakePoint(0, 0)) retain];
+    // _bgColor = [NSReadPixel(NSMakePoint(0, 0)) retain];
+	_bgColor = [[NSColor colorWithCalibratedRed:0.38f green:0.38f blue:0.38f alpha:1.0f] retain];		
     [_gradientImg unlockFocus];
+	[self setHighlightsBy:NSNoCellMask];
 } 
 
 - (id)initWithCoder:(NSCoder *)decoder {
@@ -76,8 +78,15 @@
 	[self drawInteriorWithFrame:cellFrame inView:controlView]; 
 }
 
+- (void)setHighlighted:(BOOL)flag
+{
+	return;
+}
+
 - (void)drawInteriorWithFrame:(NSRect)cellFrame inView:(NSView *)controlView {
 
+	NSLog(@"drawInteriorWithFrame:");
+	
 	NSImage *bgImg = _gradientImg;
 	if ([self state] == NSOnState || [self isHighlighted]) {
 		bgImg = _gradientImgFlipped;
@@ -87,23 +96,21 @@
 	[_bgColor set];
     NSRectFill(cellFrame);	
 
-	[bgImg drawInRect:NSMakeRect(cellFrame.origin.x+1, cellFrame.origin.y+cellFrame.size.height, 
-									  cellFrame.size.width-2, 
-									  -cellFrame.size.height) 
-				  fromRect:NSMakeRect(0, 0, 
-									  [bgImg size].width, 
-									  [bgImg size].height) 
-				 operation:NSCompositeSourceOver 
-				  fraction:1.0];					  
+//	[bgImg drawInRect:NSMakeRect(cellFrame.origin.x, cellFrame.origin.y+1.0, cellFrame.size.width, cellFrame.size.width)
+//				  fromRect:NSMakeRect(0, 0, 
+//									  [bgImg size].width, 
+//									  [bgImg size].height) 
+//				 operation:NSCompositeSourceOver 
+//				  fraction:1.0];					  
 
 	NSImage *img = [self image];
 	[img setFlipped:YES];	
-	[img drawInRect:NSInsetRect(cellFrame,(cellFrame.size.width - [img size].width)/2, (cellFrame.size.height - [img size].height)/2) 
-				  fromRect:NSMakeRect(0, 0, 
-									  [img size].width, 
-									  [img size].height) 
-				 operation:NSCompositeSourceOver 
-				  fraction:1.0];	
+//	[img drawInRect:cellFrame
+//				  fromRect:NSMakeRect(0, 0, 
+//									  [img size].width, 
+//									  [img size].height) 
+//				 operation:NSCompositeSourceOver 
+//				  fraction:1.0];	
 
 }
 

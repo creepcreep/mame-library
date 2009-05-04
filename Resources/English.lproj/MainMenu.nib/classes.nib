@@ -75,6 +75,8 @@
 			<dict>
 				<key>checkForHistoryDatUpdates</key>
 				<string>id</string>
+				<key>closeCollectionEditor</key>
+				<string>id</string>
 				<key>editSmartCollection</key>
 				<string>id</string>
 				<key>export</key>
@@ -168,6 +170,8 @@
 				<string>MLOutlineViewDragController</string>
 				<key>photoSizeSlider</key>
 				<string>NSSlider</string>
+				<key>predicateEditor</key>
+				<string>NSPredicateEditor</string>
 				<key>preferencesController</key>
 				<string>MLPreferencesController</string>
 				<key>scrollView</key>
@@ -239,14 +243,6 @@
 		</dict>
 		<dict>
 			<key>CLASS</key>
-			<string>MLSourceListSplitView</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
-			<key>SUPERCLASS</key>
-			<string>KFSplitView</string>
-		</dict>
-		<dict>
-			<key>CLASS</key>
 			<string>MLOutlineView</string>
 			<key>LANGUAGE</key>
 			<string>ObjC</string>
@@ -258,6 +254,14 @@
 			<string>NSObject</string>
 			<key>LANGUAGE</key>
 			<string>ObjC</string>
+		</dict>
+		<dict>
+			<key>CLASS</key>
+			<string>MLSourceListSplitView</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>KFSplitView</string>
 		</dict>
 		<dict>
 			<key>CLASS</key>

@@ -18,7 +18,8 @@
         _metalBacking = [[NSImage imageNamed:@"header_gradient_flipped.png"] retain];
 
 		[_metalBacking lockFocus];
-		_bgColor = [NSReadPixel(NSMakePoint(0, 0)) retain];
+		_bgColor = [[NSColor colorWithCalibratedRed:0.38f green:0.38f blue:0.38f alpha:1.0f] retain];		
+		// _bgColor = [[NSColor redColor] retain];
 		[_metalBacking unlockFocus];
 
 		[self setBackgroundColor:[NSColor colorWithPatternImage:_metalBacking]];
@@ -60,17 +61,22 @@
 
 - (void)drawWithFrame:(NSRect)frame inView:(NSView*)inView {
 
-	NSRect tempSrc = NSZeroRect;
+//	NSRect tempSrc = NSZeroRect;
 //	NSRect tempDst = frame;
 
 	// Draw _metalBacking along width of frame.
-	tempSrc.origin.y = 0.0;
-	tempSrc.size.height = [_metalBacking size].height + 2.0;
+//	tempSrc.origin.y = 0.0;
+//	tempSrc.size.height = [_metalBacking size].height + 2.0;
 
 //	tempDst.origin.y -= 2.0;
 //	tempDst.size.height = frame.size.height + 2.0;
 
-	[_metalBacking drawInRect:frame fromRect:tempSrc operation:NSCompositeSourceOver fraction:1.0];
+    // Drawing code here.
+	[_bgColor set];
+    NSRectFill(frame);		
+	
+	[_metalBacking drawInRect:NSMakeRect(frame.origin.x, frame.origin.y+1.0f, frame.size.width, frame.size.height-1.0f)
+					 fromRect:NSMakeRect(0, 0, [_metalBacking size].width, [_metalBacking size].height) operation:NSCompositeSourceOver fraction:1.0];
 
 	// Draw white text centered.
 	float offset = 0.5;
