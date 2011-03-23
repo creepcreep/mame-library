@@ -68,6 +68,8 @@
 - (IBAction)addNewSmartCollection:(id)sender;
 - (IBAction)addNewFolder:(id)sender;
 
+- (BOOL)canRemove;
+- (IBAction)delete:(id)sender;
 @end
 
 

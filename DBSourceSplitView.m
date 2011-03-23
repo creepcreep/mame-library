@@ -30,7 +30,7 @@
 
 
 
-- (float)dividerThickness
+- (CGFloat)dividerThickness
 {
 	return 1.0;
 }
@@ -54,7 +54,7 @@
 
 
 
-- (float)splitView:(NSSplitView *)sender constrainMinCoordinate:(float)proposedMin ofSubviewAt:(int)offset
+- (CGFloat)splitView:(NSSplitView *)sender constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)offset
 {
 	return (proposedMin + MIN_LEFT_VIEW_WIDTH);
 }
@@ -62,7 +62,7 @@
 
 
 
-- (float)splitView:(NSSplitView *)sender constrainMaxCoordinate:(float)proposedMax ofSubviewAt:(int)offset
+- (CGFloat)splitView:(NSSplitView *)sender constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)offset
 {
 	return (proposedMax - MIN_RIGHT_VIEW_WIDTH);
 }

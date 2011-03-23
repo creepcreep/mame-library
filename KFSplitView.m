@@ -122,7 +122,7 @@ static BOOL kfScaleUInts(unsigned *integers, int numInts, unsigned targetTotal)
 + (NSString *)kfDefaultsKeyForName:(NSString *)name;
 - (void)kfSetup;
 - (void)kfSetupResizeCursors;
-- (int)kfGetDividerAtMajCoord:(float)coord;
+- (NSInteger)kfGetDividerAtMajCoord:(float)coord;
 - (void)kfPutDivider:(int)offset atMajCoord:(float)coord;
 - (void)kfRecalculateDividerRects;
 - (void)kfMoveCollapsedSubviewsOffScreen;
@@ -146,8 +146,7 @@ static BOOL kfScaleUInts(unsigned *integers, int numInts, unsigned targetTotal)
 
 - initWithFrame:(NSRect)frameRect
 {
-    if (self = [super initWithFrame:frameRect])
-    {
+    if ((self = [super initWithFrame:frameRect])) {
         [self kfSetup];
     }
 
@@ -156,8 +155,7 @@ static BOOL kfScaleUInts(unsigned *integers, int numInts, unsigned targetTotal)
 
 - initWithCoder:(NSCoder *)coder
 {
-    if (self = [super initWithCoder:coder])
-    {
+    if ((self = [super initWithCoder:coder])) {
         [self kfSetup];
     }
 
@@ -185,17 +183,21 @@ static BOOL kfScaleUInts(unsigned *integers, int numInts, unsigned targetTotal)
 {
     NSImage *isVerticalImage, *isNotVerticalImage;
 
-    if (isVerticalImage = [NSImage imageNamed:@"NSTruthHorizontalResizeCursor"]); // standard Jaguar NSSplitView resize cursor
-    else if  (isVerticalImage = [NSImage imageNamed:@"NSTruthHResizeCursor"]);
-
+    isVerticalImage = [NSImage imageNamed:@"NSTruthHorizontalResizeCursor"];
+    if (isVerticalImage == nil) {
+        isVerticalImage = [NSImage imageNamed:@"NSTruthHResizeCursor"];
+    }
+    
     if (isVerticalImage)
     {
         kfIsVerticalResizeCursor = [[NSCursor alloc] initWithImage:isVerticalImage
                                                            hotSpot:NSMakePoint(8,8)];
     }
 
-    if (isNotVerticalImage = [NSImage imageNamed:@"NSTruthVerticalResizeCursor"]); // standard Jaguar NSSplitView resize cursor
-    else if  (isNotVerticalImage = [NSImage imageNamed:@"NSTruthVResizeCursor"]);
+    isNotVerticalImage = [NSImage imageNamed:@"NSTruthVerticalResizeCursor"];
+    if (nil == isNotVerticalImage) {
+        isNotVerticalImage = [NSImage imageNamed:@"NSTruthVResizeCursor"];
+    }
 
     if (isNotVerticalImage)
     {
@@ -241,7 +243,7 @@ static BOOL kfScaleUInts(unsigned *integers, int numInts, unsigned targetTotal)
     // All coordinates are major axis coordinates unless otherwise specified.  See the top of the file
     // for an explanation of major and minor axes.
     float   minorDim;                                           // common dimension of all subviews
-    int     divider;                                            // index of a divider being dragged
+    NSInteger     divider;                                            // index of a divider being dragged
     float   mouseCoord, mouseToDividerOffset;                   // the mouse holds on to whatever part of the divider it grabs onto
     float   dividerThickness;                                   
     float   dividerCoord, prevDividerCoord;                     
@@ -364,7 +366,7 @@ static BOOL kfScaleUInts(unsigned *integers, int numInts, unsigned targetTotal)
     splitPosConstraintFunc = NULL;
     if ([kfDelegate respondsToSelector:@selector(splitView:constrainSplitPosition:ofSubviewAt:)])
     {
-        splitPosConstraintFunc = (float (*)(id, SEL, ...))[kfDelegate methodForSelector:@selector(splitView:constrainSplitPosition:ofSubviewAt:)];
+        splitPosConstraintFunc = (float (*)(id, SEL, ...))[(NSObject *)kfDelegate methodForSelector:@selector(splitView:constrainSplitPosition:ofSubviewAt:)];
     }
 
     // When the user grabs and drags the divider he holds onto that
@@ -575,7 +577,7 @@ static BOOL kfScaleUInts(unsigned *integers, int numInts, unsigned targetTotal)
     // Also keep track of the total thickness of all subviews, and 
     // of the first expanded subview
     unsigned totalSubviewThicknesses = 0;
-    int firstExpandedSubviewIndex = NSNotFound;
+    NSInteger firstExpandedSubviewIndex = NSNotFound;
     for (i = 0; i < numSubviews; i++)
     {
         NSView *subview = [subviews objectAtIndex:i];
@@ -631,7 +633,7 @@ static BOOL kfScaleUInts(unsigned *integers, int numInts, unsigned targetTotal)
 // Could be done efficiently here, but would duplicate functionality of other methods.
 - (void)kfLayoutSubviewsUsingThicknesses:(unsigned *)subviewThicknesses
 {
-    int i, lastPositiveThicknessSubviewIndex, numSubviews;
+    NSInteger i, lastPositiveThicknessSubviewIndex, numSubviews;
     float minorDimOfSplitViewSize;
     float curMajAxisPos, dividerThickness;
     NSArray *subviews;
@@ -745,9 +747,9 @@ static BOOL kfScaleUInts(unsigned *integers, int numInts, unsigned targetTotal)
 
 // returns the index ('offset' in Apple's docs) of the divider under the
 // given coordinate, or NSNotFound if there isn't a divider there.
-- (int)kfGetDividerAtMajCoord:(float)coord
+- (NSInteger)kfGetDividerAtMajCoord:(float)coord
 {
-    int i, numDividers, result;
+    NSInteger i, numDividers, result;
     float curDividerMinimumMajorCoord, dividerThickness;
         
     numDividers = [kfDividerRects count];

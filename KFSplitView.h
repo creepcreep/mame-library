@@ -14,7 +14,19 @@
 
 #import <AppKit/AppKit.h>
 
-@interface KFSplitView:NSSplitView
+@protocol KFSplitViewDelegate <NSSplitViewDelegate>
+@optional
+
+- (void)splitView:(id)sender didDoubleClickInDivider:(int)index;
+- (void)splitView:(id)sender didFinishDragInDivider:(int)index;
+
+@end
+
+// in notification argument 'object' will be sender, 'userInfo' will have key @"subview"
+//- (void)splitViewDidCollapseSubview:(NSNotification *)notification;
+//- (void)splitViewDidExpandSubview:(NSNotification *)notification;
+
+@interface KFSplitView : NSSplitView
 {
     // retained
     NSMutableSet *kfCollapsedSubviews;
@@ -28,7 +40,7 @@
     NSUserDefaults *kfDefaults;
     NSNotificationCenter *kfNotificationCenter;
     BOOL kfIsVertical;
-    id kfDelegate;
+    id <KFSplitViewDelegate> kfDelegate;
 }
 
 // sets the collapse-state of a subview, which is completely independent
@@ -49,17 +61,6 @@
 - (NSString *)positionAutosaveName;
 - (void)setPositionFromPlistObject:(id)string;
 - (id)plistObjectWithSavedPosition;
-
-@end
-
-@interface NSObject(KFSplitViewDelegate)
-
-// in notification argument 'object' will be sender, 'userInfo' will have key @"subview"
-- (void)splitViewDidCollapseSubview:(NSNotification *)notification;
-- (void)splitViewDidExpandSubview:(NSNotification *)notification;
-
-- (void)splitView:(id)sender didDoubleClickInDivider:(int)index;
-- (void)splitView:(id)sender didFinishDragInDivider:(int)index;
 
 @end
 

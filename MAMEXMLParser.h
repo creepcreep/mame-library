@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 @class MLGame;
-@interface MAMEXMLParser : NSObject {
+@interface MAMEXMLParser : NSObject <NSXMLParserDelegate> {
 
 	IBOutlet NSWindow *_progressWindow;
 

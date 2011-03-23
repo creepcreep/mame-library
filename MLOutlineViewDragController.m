@@ -144,7 +144,7 @@
 - (int)typeForShadowItem:(id)item
 {
 	NSNumber *type;
-	if (type = [[item observedObject] valueForKey:@"type"]) {
+	if ((type = [[item observedObject] valueForKey:@"type"])) {
 		return [type intValue];			
 	}
 	return -1;
@@ -169,12 +169,13 @@
 	
 	if ([selectedObjects count] > 0) {
 		MLCollection *selectedCollection = [selectedObjects objectAtIndex:0];		
-		int selectedRow = [treeTable selectedRow];
+		NSInteger selectedRow = [treeTable selectedRow];
 		selectedRow--;
-		if (selectedRow < 0) {
+		if (selectedRow > 0) {
 			selectedRow = 0;
 		}
-		[treeTable selectRow:selectedRow byExtendingSelection:NO];				
+        
+        [treeTable selectRowIndexes:[NSIndexSet indexSetWithIndex:selectedRow] byExtendingSelection:NO];
 		[[selectedCollection managedObjectContext] deleteObject:selectedCollection];
 	}
 	
@@ -391,17 +392,12 @@
 	
 	NSArray *array = [ self getSubGroups:objectContext forParent:parent ];
 	
-	// Reset the indexes...
-	NSEnumerator *enumerator = [array objectEnumerator];
-	NSManagedObject* anObject;
 	int index = 0;
-	while (anObject = [enumerator nextObject]) {
+    for (NSManagedObject* anObject in array) {
 		// Multiply index by 10 to make dragging code easier to implement ;) ....
-    [anObject setValue:[ NSNumber numberWithInt:(index * MLTreeInterval ) ] forKey:@"sequence"];	  
+        [anObject setValue:[ NSNumber numberWithInt:(index * MLTreeInterval ) ] forKey:@"sequence"];	  
 		index++;
-	}	
-	
-	
+	}		
 }
 
 - (NSDragOperation)outlineView:(NSOutlineView *)outlineView validateDrop:(id <NSDraggingInfo>)info proposedItem:(id)item proposedChildIndex:(int)index {

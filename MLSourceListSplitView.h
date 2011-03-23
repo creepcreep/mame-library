@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import "KFSplitView.h"
 
-@interface MLSourceListSplitView : KFSplitView {
+@interface MLSourceListSplitView : KFSplitView <KFSplitViewDelegate> {
 	NSView *topSubview;
 	NSView *bottomSubview;
 }

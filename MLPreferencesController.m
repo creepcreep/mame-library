@@ -47,7 +47,7 @@
 	NSString *path;
 	NSImage *image;
 	
-	if (path = [self romsPath]) {
+	if ((path = [self romsPath])) {
 		image = [[NSWorkspace sharedWorkspace] iconForFile:path];
 		if (image) {
 			[image setSize:NSMakeSize(16,16)];
@@ -94,7 +94,7 @@
 
 	NSString *currentPath = [self mosxPath];
 	NSOpenPanel *openPanel = [NSOpenPanel openPanel];
-	if ([openPanel runModalForDirectory:[currentPath stringByDeletingLastPathComponent] file:[currentPath lastPathComponent] types:[NSArray arrayWithObject:NSApplicationFileType]]) {
+	if ([openPanel runModalForDirectory:[currentPath stringByDeletingLastPathComponent] file:[currentPath lastPathComponent] types:nil]) {
 		NSArray *filenames = [openPanel filenames];
 		NSString *newPath;
 		if (newPath = [filenames objectAtIndex:0]) {

@@ -22,7 +22,7 @@
 }
 
 
-- (float)dividerThickness
+- (CGFloat)dividerThickness
 {
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"MLHideArtworkView"]) {
 		return 0.0;
@@ -44,12 +44,12 @@
 }
 
 
-- (float)splitView:(NSSplitView *)sender constrainMinCoordinate:(float)proposedMin ofSubviewAt:(int)offset
+- (CGFloat)splitView:(NSSplitView *)sender constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)offset
 {
 	return (proposedMin + MIN_TOP_VIEW_HEIGHT);
 }
 
-- (float)splitView:(NSSplitView *)sender constrainMaxCoordinate:(float)proposedMax ofSubviewAt:(int)offset
+- (CGFloat)splitView:(NSSplitView *)sender constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)offset
 {
 	return (proposedMax - MIN_BOTTOM_VIEW_HEIGHT);
 }

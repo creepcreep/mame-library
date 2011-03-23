@@ -250,7 +250,7 @@
 
 - (void)deleteMetadata
 {
-	[[NSFileManager defaultManager] removeFileAtPath:[self metadataPath] handler:nil];
+	[[NSFileManager defaultManager] removeItemAtPath:[self metadataPath] error:nil];
 }
 
 

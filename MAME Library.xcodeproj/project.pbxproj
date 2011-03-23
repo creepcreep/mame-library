@@ -94,7 +94,6 @@
 		5BE520E60C54B13600CCFD65 /* icons.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 5BE520E40C54B13600CCFD65 /* icons.tiff */; };
 		5BE521010C54B5D700CCFD65 /* header_gradient.png in Resources */ = {isa = PBXBuildFile; fileRef = 5BE521000C54B5D700CCFD65 /* header_gradient.png */; };
 		5BE521210C54B7A700CCFD65 /* MLHeaderViewButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BE5211F0C54B7A700CCFD65 /* MLHeaderViewButtonCell.m */; };
-		5BE521C40C54CD9400CCFD65 /* MLControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BE521C20C54CD9400CCFD65 /* MLControl.m */; };
 		5BE523490C54DD7E00CCFD65 /* header_gradient_flipped.png in Resources */ = {isa = PBXBuildFile; fileRef = 5BE523480C54DD7E00CCFD65 /* header_gradient_flipped.png */; };
 		770B37ED0679A11B001EADE2 /* MAME_Library_DataModel1.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 770B37EC0679A11B001EADE2 /* MAME_Library_DataModel1.xcdatamodel */; };
 		77C8280E06725ACE000B614F /* MAME_Library_AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 77C8280C06725ACE000B614F /* MAME_Library_AppDelegate.m */; };
@@ -964,7 +963,6 @@
 				5B00D9AB0C4FA1B70091E88A /* MLToolbarBackgroundView.m in Sources */,
 				5BE520CA0C54AE8F00CCFD65 /* MLHeaderView.m in Sources */,
 				5BE521210C54B7A700CCFD65 /* MLHeaderViewButtonCell.m in Sources */,
-				5BE521C40C54CD9400CCFD65 /* MLControl.m in Sources */,
 				5BC5CBA40C56617C005908B9 /* iTableColumnHeaderCell.m in Sources */,
 				5BC5CC300C56664E005908B9 /* MLTableHeaderImageCell.m in Sources */,
 				5B174BD50C65D8B50035B99D /* MLCheckboxButton.m in Sources */,
@@ -1047,10 +1045,6 @@
 		26FC0A860875C7B200E6366F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
@@ -1072,11 +1066,12 @@
 		26FC0A890875C7B200E6366F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_32_BIT)";
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PREBINDING = NO;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				SDKROOT = "";
 				VALID_ARCHS = "ppc64 ppc7400 ppc970 i386 x86_64 ppc";
 			};
 			name = Debug;
@@ -1084,16 +1079,13 @@
 		26FC0A8A0875C7B200E6366F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					i386,
-					ppc,
-					ppc64,
-					x86_64,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PREBINDING = NO;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				SDKROOT = "";
 			};
 			name = Release;
 		};

@@ -14,7 +14,7 @@
 {
 	NSString *history;
 	
-	if (history = [NSString stringWithContentsOfFile:path]) {
+	if (history = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil]) {
 		NSPersistentStoreCoordinator *coordinator = [(MAME_Library_AppDelegate *)[NSApp delegate] persistentStoreCoordinator];
 		if (coordinator != nil) {
 			_context = [[NSManagedObjectContext alloc] init];

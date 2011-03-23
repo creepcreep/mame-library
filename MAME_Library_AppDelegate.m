@@ -103,7 +103,7 @@
 	
 	NSString *metadataDir = [MLMetadataPath stringByExpandingTildeInPath];    
 	if (![fileManager fileExistsAtPath: metadataDir]) {
-		[fileManager createDirectoryAtPath:metadataDir attributes:nil];
+        [fileManager createDirectoryAtPath:metadataDir withIntermediateDirectories:YES attributes:nil error:nil];
 		[NSThread detachNewThreadSelector:@selector(rebuildMetadata) toTarget:self withObject:nil];
 	}	
 	
@@ -115,13 +115,12 @@
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 		
 	NSFileManager *fileManager = [NSFileManager defaultManager];				
-	NSEnumerator *filenamesEnu = [[fileManager directoryContentsAtPath:MLMetadataPath] objectEnumerator];
-	NSString *path;
-	while (path = [filenamesEnu nextObject]) {
+    NSArray *paths = [fileManager contentsOfDirectoryAtPath:MLMetadataPath error:nil];
+    for (NSString *path in paths) {
 		if ([[path pathExtension] isEqualToString:MLMetadataPathExtension]) {
-			[fileManager removeFileAtPath:path handler:nil];
-		}
-	}
+			[fileManager removeItemAtPath:path error:nil];
+		}        
+    }
 	
 	// Each thread needs it's own managedObjectContext
 	NSManagedObjectContext *threadContext = [[NSManagedObjectContext alloc] init];
@@ -132,11 +131,9 @@
 	NSError *error = nil;
 	NSArray *games = [threadContext executeFetchRequest:request error:&error];				
 	
-	NSEnumerator *availableGamesEnu = [games objectEnumerator];
-	MLGame *nextGame;
-	while (nextGame = [availableGamesEnu nextObject]) {
-		[nextGame saveMetadata];
-	}
+    for (MLGame *nextGame in games) {
+		[nextGame saveMetadata];        
+    }
 	
 	[threadContext release];
 	
@@ -302,9 +299,7 @@
 // Opens metadata files sent from Spotlight
 - (void)application:(NSApplication *)sender openFiles:(NSArray *)filenames
 {
-	NSEnumerator *filenamesEnu = [filenames objectEnumerator];
-	NSString *filename;
-	while (filename = [filenamesEnu nextObject]) {
+    for (NSString *filename in filenames) {
 		if ([[filename pathExtension] isEqualToString:MLMetadataPathExtension]) {
 			// NSLog(@"open %@",[[filename lastPathComponent] stringByDeletingPathExtension]);
 			
@@ -316,7 +311,7 @@
 				MLGame *game = [games objectAtIndex:0];
 				// select the Library item
 				[collectionsTreeController setSelectionIndexPath:[NSIndexPath indexPathWithIndex:0]];
-				int index = [[availableGamesArrayController arrangedObjects] indexOfObjectIdenticalTo:game];
+				NSInteger index = [[availableGamesArrayController arrangedObjects] indexOfObjectIdenticalTo:game];
 				
 				// NSLog(@"index: %i",index);
 				
@@ -350,9 +345,9 @@
 
 - (IBAction)checkForHistoryDatUpdates:(id)sender
 {
-	SUAppcast *historyAppcast = [[SUAppcast alloc] init]; 
-	[historyAppcast setDelegate:self];
-	[historyAppcast fetchAppcastFromURL:[NSURL URLWithString:MLHistoryAppcastURL]];	
+//	SUAppcast *historyAppcast = [[SUAppcast alloc] init]; 
+//	[historyAppcast setDelegate:self];
+//	[historyAppcast fetchAppcastFromURL:[NSURL URLWithString:MLHistoryAppcastURL]];	
 }
 
 - (IBAction)getMAMEOSX:(id)sender
@@ -758,14 +753,13 @@
 
 	// empty the metadata folder
 	NSFileManager *fileManager = [NSFileManager defaultManager];
-	NSArray *metadataFolderContents = [fileManager directoryContentsAtPath:MLMetadataPath];
-	NSEnumerator *metadataFolderContentsEnu = [metadataFolderContents objectEnumerator];
-	NSString *path;
-	while (path = [metadataFolderContentsEnu nextObject]) {
+	NSArray *metadataFolderContents = [fileManager contentsOfDirectoryAtPath:MLMetadataPath error:nil];
+    
+    for (NSString *path in metadataFolderContents) {
 		if ([[path pathExtension] isEqualToString:MLMetadataPathExtension]) {
-			[fileManager removeFileAtPath:path handler:nil];
-		}
-	}
+			[fileManager removeItemAtPath:path error:nil];
+		}        
+    }
 	
 	NSArray *selectedObjects;
 
@@ -941,12 +935,12 @@
     fileManager = [NSFileManager defaultManager];
     applicationSupportFolder = [self applicationSupportFolder];
     if ( ![fileManager fileExistsAtPath:applicationSupportFolder isDirectory:NULL] ) {
-        [fileManager createDirectoryAtPath:applicationSupportFolder attributes:nil];
+        [fileManager createDirectoryAtPath:applicationSupportFolder withIntermediateDirectories:YES attributes:nil error:nil];
     }
     
     url = [NSURL fileURLWithPath: [applicationSupportFolder stringByAppendingPathComponent: @"MAME_Library.ml_sqlite"]];
 	
-	storeMetaData = [NSPersistentStoreCoordinator metadataForPersistentStoreWithURL:url error:&error];
+	storeMetaData = [NSPersistentStoreCoordinator metadataForPersistentStoreOfType:NSSQLiteStoreType URL:url error:&error];
 	// here is where we need to jump somewhere else if the store is out of date	
 	int dataModelVersion = [[storeMetaData objectForKey:@"MLDataModelVersion"] intValue];
 	if (dataModelVersion == 0) {
@@ -961,9 +955,9 @@
 		NSString *importPath = [applicationSupportFolder stringByAppendingPathComponent: @"MAME_Library.previous.ml_sqlite"];
 	    importUrl = [NSURL fileURLWithPath:importPath];	
 		if ([[NSFileManager defaultManager] fileExistsAtPath:importPath]) {
-			[[NSFileManager defaultManager] removeFileAtPath:importPath handler:nil];
+			[[NSFileManager defaultManager] removeItemAtPath:importPath error:nil];
 		}
-		[[NSFileManager defaultManager] movePath:[url path] toPath:[importUrl path] handler:nil];		
+		[[NSFileManager defaultManager] moveItemAtPath:[url path] toPath:[importUrl path] error:nil];		
 		//NSLog(@"Move: %@ -> %@",url,importUrl);
 	}
 	
@@ -1270,16 +1264,38 @@
 	playcount++;
 	[game setValue:[NSNumber numberWithInt:playcount] forKey:@"playcount"];
 	
-	NSMutableArray *args = [NSMutableArray arrayWithObjects:@"-Game",[[romPath lastPathComponent] stringByDeletingPathExtension],nil];
-	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"MLLaunchFullScreen"]) {
-		[args addObject:@"-FullScreen"];
-		[args addObject:@"YES"];		
-	}
+	NSString *mamePath = [[NSUserDefaults standardUserDefaults] stringForKey:@"MLMAMEPath"];
+	BOOL isDirectory = NO;
+	BOOL exists = NO;
+	exists = [[NSFileManager defaultManager] fileExistsAtPath:mamePath isDirectory:&isDirectory];
 	
-//    NSLog(@"Command: %@ Args: %@",[ROM valueForKey:@"title"],args);	return;	
-	
-	mameTask = [[NSTask launchedTaskWithLaunchPath:[NSString stringWithFormat:@"%@/Contents/MacOS/MAME OS X",[[NSUserDefaults standardUserDefaults] stringForKey:@"MLMAMEPath"]] arguments:args] retain];
-	
+    NSMutableArray *args = [NSMutableArray arrayWithCapacity:3];
+    
+	if (exists && isDirectory) {
+        // MAME OS X
+		mamePath = [NSString stringWithFormat:@"%@/Contents/MacOS/MAME OS X",mamePath];
+        
+        [args addObject:@"-Game"];
+        [args addObject:[[romPath lastPathComponent] stringByDeletingPathExtension]];        
+        
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"MLLaunchFullScreen"]) {
+            [args addObject:@"-FullScreen"];
+            [args addObject:@"YES"];		
+        }
+	} else {
+        // SDLMame
+        NSString *romsPath = [[NSUserDefaults standardUserDefaults] valueForKey:@"MLROMsPath"];
+        if (nil != romsPath) {
+            [args addObject:@"-rompath"];
+            [args addObject:[romPath stringByDeletingLastPathComponent]];    
+            [args addObject:[[romPath lastPathComponent] stringByDeletingPathExtension]];
+        }
+    }
+    
+    NSLog(@"Command: %@ Args: %@", mamePath, args);
+    
+    mameTask = [[NSTask launchedTaskWithLaunchPath:mamePath arguments:args] retain];            	
+    
 	// register for 'game ended' notification
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(findScreenshots:) name:@"NSTaskDidTerminateNotification" object:nil];	
 	
@@ -1411,58 +1427,59 @@
 
 #pragma mark -
 // SUAppcastDelegate methods
-#pragma mark SUAppcastDelegate methods
-- (void)appcastDidFinishLoading:(SUAppcast *)ac
-{
-	[[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:MLLastHistoryCheckTimeKey];
+#pragma mark SUAppcastDelegate methods (History .dat)
 
-	NSArray *items = [ac items];
-	
-	NSSortDescriptor *versionStringDescriptor = [[[NSSortDescriptor alloc] initWithKey:@"versionString" ascending:NO] autorelease]; 
-	
-	[items sortedArrayUsingDescriptors:[NSArray arrayWithObject:versionStringDescriptor]];
-
-	if ([items count] > 0) {
-		id nextItem = [items objectAtIndex:0];
-		if ([[nextItem description] isEqualToString:@"mamehistory"]) {
-			if (![[nextItem versionString] isEqualToString:[[NSUserDefaults standardUserDefaults] stringForKey:@"MLLastHistoryDatVersion"]]) {
-				NSLog(@"title: %@, versionString: %@, fileURL: %@",[nextItem title],[nextItem versionString],[nextItem fileURL]);
-				// NSURLDownload *downloader = [[NSURLDownload alloc] initWithRequest:[NSURLRequest requestWithURL:[nextItem fileURL]] delegate:self];					
-			}
-		}
-	}
-}
-
-- (void)download:(NSURLDownload *)download decideDestinationWithSuggestedFilename:(NSString *)name
-{
-	// If name ends in .txt, the server probably has a stupid MIME configuration. We'll give
-	// the developer the benefit of the doubt and chop that off.
-	if ([[name pathExtension] isEqualToString:@"txt"]) {
-		name = [name stringByDeletingPathExtension];
-	}
-	
-	historyDownloadPath = [[self cacheFolder] stringByAppendingPathComponent:name];
-	[download setDestination:historyDownloadPath allowOverwrite:YES];
-}
-
-- (void)downloadDidFinish:(NSURLDownload *)download
-{
-	NSLog(@"downloadDidFinish: %@",download);
-
-	SUUnarchiver *unarchiver = [[SUUnarchiver alloc] init];
-	[unarchiver setDelegate:self];
-	[unarchiver unarchivePath:historyDownloadPath];
-	
-	[download release];		
-}
-
-- (void)unarchiverDidFinish:(SUUnarchiver *)ua
-{
-	[ua autorelease];
-	NSString *newHistoryPath = [[[historyDownloadPath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"history"] stringByAppendingPathExtension:@"dat"];
-	NSLog(@"new history.dat downloaded & extracted: %@",newHistoryPath);
-	_historyParser = [[MLHistoryParser alloc] init];
-	[_historyParser parseHistoryDataAtPath:newHistoryPath];
-}
+//- (void)appcastDidFinishLoading:(SUAppcast *)ac
+//{
+//	[[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:MLLastHistoryCheckTimeKey];
+//
+//	NSArray *items = [ac items];
+//	
+//	NSSortDescriptor *versionStringDescriptor = [[[NSSortDescriptor alloc] initWithKey:@"versionString" ascending:NO] autorelease]; 
+//	
+//	[items sortedArrayUsingDescriptors:[NSArray arrayWithObject:versionStringDescriptor]];
+//
+//	if ([items count] > 0) {
+//		id nextItem = [items objectAtIndex:0];
+//		if ([[nextItem description] isEqualToString:@"mamehistory"]) {
+//			if (![[nextItem versionString] isEqualToString:[[NSUserDefaults standardUserDefaults] stringForKey:@"MLLastHistoryDatVersion"]]) {
+//				NSLog(@"title: %@, versionString: %@, fileURL: %@",[nextItem title],[nextItem versionString],[nextItem fileURL]);
+//				// NSURLDownload *downloader = [[NSURLDownload alloc] initWithRequest:[NSURLRequest requestWithURL:[nextItem fileURL]] delegate:self];					
+//			}
+//		}
+//	}
+//}
+//
+//- (void)download:(NSURLDownload *)download decideDestinationWithSuggestedFilename:(NSString *)name
+//{
+//	// If name ends in .txt, the server probably has a stupid MIME configuration. We'll give
+//	// the developer the benefit of the doubt and chop that off.
+//	if ([[name pathExtension] isEqualToString:@"txt"]) {
+//		name = [name stringByDeletingPathExtension];
+//	}
+//	
+//	historyDownloadPath = [[self cacheFolder] stringByAppendingPathComponent:name];
+//	[download setDestination:historyDownloadPath allowOverwrite:YES];
+//}
+//
+//- (void)downloadDidFinish:(NSURLDownload *)download
+//{
+//	NSLog(@"downloadDidFinish: %@",download);
+//
+//	SUUnarchiver *unarchiver = [[SUUnarchiver alloc] init];
+//	[unarchiver setDelegate:self];
+//	[unarchiver unarchivePath:historyDownloadPath];
+//	
+//	[download release];		
+//}
+//
+//- (void)unarchiverDidFinish:(SUUnarchiver *)ua
+//{
+//	[ua autorelease];
+//	NSString *newHistoryPath = [[[historyDownloadPath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"history"] stringByAppendingPathExtension:@"dat"];
+//	NSLog(@"new history.dat downloaded & extracted: %@",newHistoryPath);
+//	_historyParser = [[MLHistoryParser alloc] init];
+//	[_historyParser parseHistoryDataAtPath:newHistoryPath];
+//}
 
 @end

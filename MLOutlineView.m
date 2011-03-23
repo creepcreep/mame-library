@@ -7,6 +7,7 @@
 //
 
 #import "MLOutlineView.h"
+#import "MLOutlineViewDragController.h"
 
 @implementation MLOutlineView
 
@@ -39,7 +40,7 @@
 
 - (void)keyDown:(NSEvent*)theEvent {
     if ([[theEvent characters] isEqualToString: @"\177"]) {
-		[[self delegate] delete:self];
+		[(MLOutlineViewDragController *)[self delegate] delete:self];
     } else {
         [super keyDown: theEvent];
     }
@@ -47,13 +48,13 @@
 
 -(IBAction)delete:(id)sender
 {
-	[[self delegate] delete:sender];
+	[(MLOutlineViewDragController *)[self delegate] delete:sender];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)aMenuItem
 {
     if ([aMenuItem action] == @selector(delete:)) {
-		return [[self delegate] canRemove];
+		return [(MLOutlineViewDragController *)[self delegate] canRemove];
     }
 	
     return YES;

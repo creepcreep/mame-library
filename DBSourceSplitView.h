@@ -13,7 +13,7 @@
 #import "KFSplitView.h"
 
 
-@interface DBSourceSplitView : KFSplitView {
+@interface DBSourceSplitView : KFSplitView <KFSplitViewDelegate> {
 	id leftSubview;
 	id rightSubview;
 }
