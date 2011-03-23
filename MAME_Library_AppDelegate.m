@@ -198,10 +198,8 @@
 	// set up the iApp style table headers
 	iTableColumnHeaderCell *headerCell;
 	NSArray *columns = [tableView tableColumns];
-	NSEnumerator *columnsEnu = [columns objectEnumerator];
-	NSTableColumn *nextColumn;
 	
-	while (nextColumn = [columnsEnu nextObject]) {
+	for (NSTableColumn *nextColumn in columns ) {
         headerCell = [[iTableColumnHeaderCell alloc] 
                         initTextCell:[[nextColumn headerCell] stringValue]];
 		[headerCell bind:@"sortDescriptors" toObject:availableGamesArrayController withKeyPath:@"sortDescriptors" options:nil];
@@ -221,11 +219,9 @@
 		
 	// Set up the 'Sort By' Menu
 	NSArray *sortKeys = [NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Sort Keys" ofType:@"plist"]];
-	NSEnumerator *sortKeysEnu = [sortKeys objectEnumerator];
 	_sortKeyTitles = [[NSMutableDictionary alloc] initWithCapacity:[sortKeys count]];
-	id nextSortKey;
 	int menuItemIndex = 0;
-	while (nextSortKey = [sortKeysEnu nextObject]) {
+	for (id nextSortKey in sortKeys) {
 		if ([[nextSortKey valueForKey:@"visible"] boolValue]) {
 			NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"by %@",[nextSortKey valueForKey:@"title"]] action:@selector(setGamesControllerSortDescriptors:) keyEquivalent:@""];
 
@@ -277,8 +273,8 @@
 //	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(forceFetch:) name:@"MLRomPathFound" object:nil];	
 
 	if (nil == _parser || ![[_parser valueForKey:@"importing"] boolValue]) {
-		NSString *mameVersion;
-		if (mameVersion = [self mameVersionString]) {
+		NSString *mameVersion = [self mameVersionString];
+		if (nil != mameVersion) {
 			double d = atof([mameVersion cStringUsingEncoding:NSASCIIStringEncoding]);		
 			if (d < 0.117) {
 				// User needs a newer MAME
@@ -424,9 +420,7 @@
 - (IBAction)setRating:(id)sender
 {
 	NSArray *selectedGames = [availableGamesArrayController selectedObjects];
-	NSEnumerator *selectedGamesEnu = [selectedGames objectEnumerator];
-	MLGame *nextGame;
-	while (nextGame = [selectedGamesEnu nextObject]) {
+	for (MLGame *nextGame in selectedGames) {
 		[nextGame setValue:[NSNumber numberWithInt:[sender tag]] forKey:@"rating"];
 	}
 }
@@ -480,10 +474,10 @@
 {
 //	NSLog(@"sortKey: %@, sortDescending: %i",[self valueForKey:@"sortKey"],[self valueForKey:@"sortDescending"]);
 	NSSortDescriptor *sd;
-	NSString *selectorString;
+	NSString *selectorString = [self valueForKeyPath:[NSString stringWithFormat:@"sortKeyTitles.%@.selector",[self valueForKey:@"sortKey"]]];
 
 	// find out if this sort key has a special selector
-	if (selectorString = [self valueForKeyPath:[NSString stringWithFormat:@"sortKeyTitles.%@.selector",[self valueForKey:@"sortKey"]]]) {
+	if (nil != selectorString) {
 		//NSLog(@"selectorString: %@",selectorString);
 		sd = [[[NSSortDescriptor alloc] initWithKey:[self valueForKey:@"sortKey"] ascending:![[self valueForKey:@"sortDescending"] boolValue] selector:NSSelectorFromString(selectorString)] autorelease];			
 	} else {
@@ -561,13 +555,12 @@
 	if (userInfo) {		
 		NSArray *userGamesInfo = [userInfo valueForKey:@"games"];		
 		if (nil != userGamesInfo && [userGamesInfo count] > 0) {
-			NSEnumerator *enu = [userGamesInfo objectEnumerator];
-			id userGameInfo;
 			NSString *gameName;
 			NSArray *fetchedGames;
 			MLGame *fetchedGame;			
-			while (userGameInfo = [enu nextObject]) {
-				if (gameName = [userGameInfo valueForKey:@"name"]) {
+			for (id userGameInfo in userGamesInfo) {
+                gameName = [userGameInfo valueForKey:@"name"];
+				if (nil != gameName) {
 					//NSLog(@"importing userinfo for: %@",gameName);
 					fetchRequest = [[self managedObjectModel] fetchRequestFromTemplateWithName:@"gameWithName" substitutionVariables:[NSDictionary dictionaryWithObject:gameName forKey:@"name"]];
 					//NSLog(@"fetchRequest: %@",fetchRequest);
@@ -597,7 +590,7 @@
 	if (nil != userCollections && [userCollections count] > 0) {			
 		NSEnumerator *userCollectionsEnu = [userCollections objectEnumerator];
 		NSDictionary *userCollectionInfo;
-		while (userCollectionInfo = [userCollectionsEnu nextObject]) {
+		while ((userCollectionInfo = [userCollectionsEnu nextObject])) {
 		
 			MLCollection *collection = nil;
 			if (nil != [userCollectionInfo valueForKey:@"objectID"]) {
@@ -825,11 +818,30 @@
 
 - (NSString *)mameVersionString
 {
-	NSString *mameInfoPath = [[[NSUserDefaults standardUserDefaults] stringForKey:@"MLMAMEPath"] stringByAppendingPathComponent:@"Contents/Info.plist"];
-	if ([[NSFileManager defaultManager] fileExistsAtPath:mameInfoPath]) {
-		NSDictionary *mameInfoDict = [NSDictionary dictionaryWithContentsOfFile:mameInfoPath];
-		return [mameInfoDict valueForKey:@"CFBundleShortVersionString"];
-	}
+	NSString *mamePath = [[NSUserDefaults standardUserDefaults] stringForKey:@"MLMAMEPath"];
+	BOOL isDirectory = NO;
+	BOOL exists = NO;
+	exists = [[NSFileManager defaultManager] fileExistsAtPath:mamePath isDirectory:&isDirectory];
+    
+    if (!exists) {
+        return nil;
+    }
+    
+    if (isDirectory) {
+        // MAME OS X
+        NSString *mameInfoPath = [[[NSUserDefaults standardUserDefaults] stringForKey:@"MLMAMEPath"] stringByAppendingPathComponent:@"Contents/Info.plist"];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:mameInfoPath]) {
+            NSDictionary *mameInfoDict = [NSDictionary dictionaryWithContentsOfFile:mameInfoPath];
+            return [mameInfoDict valueForKey:@"CFBundleShortVersionString"];
+        }        
+    } else {
+        // SDLMame
+//        [NSArray *args = [NSArray arrayWithObject:@""];
+//        NSTask *task = [NSTask launchedTaskWithLaunchPath:mamePath arguments:args];
+//        [task waitUntilExit];
+        // TODO: get mame version using NSTask
+    }
+    
 
 	return nil;	
 }
@@ -1271,6 +1283,8 @@
 	
     NSMutableArray *args = [NSMutableArray arrayWithCapacity:3];
     
+    BOOL fullscreen = [[NSUserDefaults standardUserDefaults] boolForKey:@"MLLaunchFullScreen"];
+    
 	if (exists && isDirectory) {
         // MAME OS X
 		mamePath = [NSString stringWithFormat:@"%@/Contents/MacOS/MAME OS X",mamePath];
@@ -1278,7 +1292,7 @@
         [args addObject:@"-Game"];
         [args addObject:[[romPath lastPathComponent] stringByDeletingPathExtension]];        
         
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"MLLaunchFullScreen"]) {
+        if (fullscreen) {
             [args addObject:@"-FullScreen"];
             [args addObject:@"YES"];		
         }
@@ -1290,6 +1304,10 @@
             [args addObject:[romPath stringByDeletingLastPathComponent]];    
             [args addObject:[[romPath lastPathComponent] stringByDeletingPathExtension]];
         }
+        
+        if (!fullscreen) {        
+            [args addObject:@"-window"];            
+        }        
     }
     
     NSLog(@"Command: %@ Args: %@", mamePath, args);
