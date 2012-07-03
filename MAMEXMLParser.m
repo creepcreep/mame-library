@@ -16,7 +16,7 @@
 - (void)importFromMAME
 {
 	[self setValue:[NSNumber numberWithBool:TRUE] forKey:@"animate"];
-	[self setValue:@"Collecting data from MAME OS X" forKey:@"status"];
+	[self setValue:@"Collecting data from MAME" forKey:@"status"];
 	if (_progressWindow == nil) {
 		[NSBundle loadNibNamed:@"MAMEImport" owner:self];
 	}	
@@ -99,7 +99,7 @@
 -(void)doParseWithData:(NSData *)data {
 	_gameCount = 0;
 	_gamesSinceSave = 0;	
-	_totalGames = 6674;
+	_totalGames = 10000;
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	_parser = [[NSXMLParser alloc] initWithData:data];	
 
