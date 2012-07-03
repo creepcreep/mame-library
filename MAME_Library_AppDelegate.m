@@ -18,6 +18,7 @@
 #import "KFSplitView.h"
 #import "MLPreferencesController.h"
 #import "MLHistoryParser.h"
+#import "RegexKitLite.h"
 
 @implementation MAME_Library_AppDelegate
 
@@ -819,6 +820,8 @@
 - (NSString *)mameVersionString
 {
 	NSString *mamePath = [[NSUserDefaults standardUserDefaults] stringForKey:@"MLMAMEPath"];
+    NSString *mameInfoPath = mamePath;
+    
 	BOOL isDirectory = NO;
 	BOOL exists = NO;
 	exists = [[NSFileManager defaultManager] fileExistsAtPath:mamePath isDirectory:&isDirectory];
@@ -829,21 +832,36 @@
     
     if (isDirectory) {
         // MAME OS X
-        NSString *mameInfoPath = [[[NSUserDefaults standardUserDefaults] stringForKey:@"MLMAMEPath"] stringByAppendingPathComponent:@"Contents/Info.plist"];
+        mameInfoPath = [[[NSUserDefaults standardUserDefaults] stringForKey:@"MLMAMEPath"] stringByAppendingPathComponent:@"Contents/Info.plist"];
         if ([[NSFileManager defaultManager] fileExistsAtPath:mameInfoPath]) {
             NSDictionary *mameInfoDict = [NSDictionary dictionaryWithContentsOfFile:mameInfoPath];
             return [mameInfoDict valueForKey:@"CFBundleShortVersionString"];
         }        
     } else {
         // SDLMame
-//        [NSArray *args = [NSArray arrayWithObject:@""];
-//        NSTask *task = [NSTask launchedTaskWithLaunchPath:mamePath arguments:args];
-//        [task waitUntilExit];
-        // TODO: get mame version using NSTask
+        NSArray *args = [NSArray arrayWithObject:@"-help"];
+		NSTask *task = [[NSTask alloc] init];
+		[task setLaunchPath:mameInfoPath];
+		[task setArguments:args];
+        
+		NSPipe *pipe = [NSPipe pipe];
+		[task setStandardOutput: pipe];
+		NSFileHandle *file = [pipe fileHandleForReading];
+		[task launch];        
+        [task waitUntilExit];
+		NSData *data = [file readDataToEndOfFile];
+     
+        NSString *output = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+        [task release];
+        
+        NSArray *captures = [output captureComponentsMatchedByRegex:@"M.A.M.E. v([0-9\\.u]+)"];
+        if ([captures count] == 2) {
+            return [captures objectAtIndex:1];
+        }
     }
     
 
-	return nil;	
+	return nil;
 }
 
 - (IBAction)getInfo:sender

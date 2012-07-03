@@ -42,6 +42,8 @@
 		5B80DF8D0C817F2C001A9AEE /* Artwork Viewer.nib in Resources */ = {isa = PBXBuildFile; fileRef = 5B80DF8C0C817F2C001A9AEE /* Artwork Viewer.nib */; };
 		5B80DF920C817FD0001A9AEE /* MLArtworkWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B80DF900C817FD0001A9AEE /* MLArtworkWindowController.m */; };
 		5B91201E0F6E3FE4006DDBF8 /* Collection Editor.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5B91201D0F6E3FE4006DDBF8 /* Collection Editor.xib */; };
+		5B92CD0B15A318490094BE19 /* RegexKitLite.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B92CD0A15A318490094BE19 /* RegexKitLite.m */; };
+		5B92CD1015A3192B0094BE19 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B92CD0F15A3192B0094BE19 /* libicucore.dylib */; };
 		5BB2253D0C73C26800231FB3 /* DBSourceSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BB2253B0C73C26800231FB3 /* DBSourceSplitView.m */; };
 		5BB2254C0C73C29000231FB3 /* KFSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BB2254A0C73C29000231FB3 /* KFSplitView.m */; };
 		5BB2255C0C73C31500231FB3 /* DBSourceView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BB2255A0C73C31500231FB3 /* DBSourceView.m */; };
@@ -190,6 +192,9 @@
 		5B80DF8F0C817FD0001A9AEE /* MLArtworkWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLArtworkWindowController.h; sourceTree = "<group>"; };
 		5B80DF900C817FD0001A9AEE /* MLArtworkWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLArtworkWindowController.m; sourceTree = "<group>"; };
 		5B91201D0F6E3FE4006DDBF8 /* Collection Editor.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "Collection Editor.xib"; sourceTree = "<group>"; };
+		5B92CD0915A318490094BE19 /* RegexKitLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegexKitLite.h; sourceTree = "<group>"; };
+		5B92CD0A15A318490094BE19 /* RegexKitLite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegexKitLite.m; sourceTree = "<group>"; };
+		5B92CD0F15A3192B0094BE19 /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = /usr/lib/libicucore.dylib; sourceTree = "<absolute>"; };
 		5BB2253A0C73C26800231FB3 /* DBSourceSplitView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = DBSourceSplitView.h; sourceTree = "<group>"; };
 		5BB2253B0C73C26800231FB3 /* DBSourceSplitView.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = DBSourceSplitView.m; sourceTree = "<group>"; };
 		5BB225490C73C29000231FB3 /* KFSplitView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = KFSplitView.h; sourceTree = "<group>"; };
@@ -282,6 +287,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5B92CD1015A3192B0094BE19 /* libicucore.dylib in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				5BB576F80CD789A200BFD5F6 /* Sparkle.framework in Frameworks */,
 				5BB578010CD7905300BFD5F6 /* Quartz.framework in Frameworks */,
@@ -338,6 +344,7 @@
 				5B300ECE0F14C12400514780 /* Spotlight Importer */,
 				7756732906782D8800D1FEB8 /* Models */,
 				080E96DDFE201D6D7F000001 /* Classes */,
+				5B92CD0D15A3184E0094BE19 /* Lib */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
@@ -370,6 +377,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5B92CD0F15A3192B0094BE19 /* libicucore.dylib */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
@@ -516,6 +524,23 @@
 				5B80DF900C817FD0001A9AEE /* MLArtworkWindowController.m */,
 			);
 			name = "Artwork Window Controller";
+			sourceTree = "<group>";
+		};
+		5B92CD0D15A3184E0094BE19 /* Lib */ = {
+			isa = PBXGroup;
+			children = (
+				5B92CD0E15A318580094BE19 /* RegexKitLite */,
+			);
+			name = Lib;
+			sourceTree = "<group>";
+		};
+		5B92CD0E15A318580094BE19 /* RegexKitLite */ = {
+			isa = PBXGroup;
+			children = (
+				5B92CD0915A318490094BE19 /* RegexKitLite.h */,
+				5B92CD0A15A318490094BE19 /* RegexKitLite.m */,
+			);
+			name = RegexKitLite;
 			sourceTree = "<group>";
 		};
 		5BB16FBA0B4EFA7100DAAC9B /* View */ = {
@@ -984,6 +1009,7 @@
 				5B80DF920C817FD0001A9AEE /* MLArtworkWindowController.m in Sources */,
 				5BC506470C8DCFA000ACF137 /* MAME_Library_DataModel3.xcdatamodel in Sources */,
 				5BC506530C8DD1A800ACF137 /* MLHistoryParser.m in Sources */,
+				5B92CD0B15A318490094BE19 /* RegexKitLite.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
