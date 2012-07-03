@@ -46,15 +46,31 @@
 
 - (void)getXMLFromMAME:(id)sender
 {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	NSString *mameutilPath = [[[NSUserDefaults standardUserDefaults] stringForKey:@"MLMAMEPath"] stringByAppendingPathComponent:@"Contents/MacOS/mameosx-util"];	
-	
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];    
+    
+	NSString *mamePath = [[NSUserDefaults standardUserDefaults] stringForKey:@"MLMAMEPath"];
+    NSString *mameutilPath = mamePath;
+    NSString *args = nil;
+    
+    BOOL isDirectory = NO;
+	BOOL exists = NO;
+	exists = [[NSFileManager defaultManager] fileExistsAtPath:mamePath isDirectory:&isDirectory];
+	    
+	if (exists && isDirectory) {
+        // MAME OS X
+        mameutilPath = [[[NSUserDefaults standardUserDefaults] stringForKey:@"MLMAMEPath"] stringByAppendingPathComponent:@"Contents/MacOS/mameosx-util"];
+        args = @"--listxml";
+	} else {
+        // SDLMame        
+        args = @"-listxml";
+    }
+        
 //	NSLog(@"mameutilPath: %@",mameutilPath);
 	
 	if ([[NSFileManager defaultManager] fileExistsAtPath:mameutilPath]) {
 		NSTask *task = [[NSTask alloc] init];
 		[task setLaunchPath: mameutilPath];
-		[task setArguments: [NSArray arrayWithObject:@"--listxml"]];
+		[task setArguments: [NSArray arrayWithObject:args]];
 		NSPipe *pipe = [NSPipe pipe];
 		[task setStandardOutput: pipe];
 		NSFileHandle *file = [pipe fileHandleForReading];		
@@ -195,12 +211,12 @@
 //		NSManagedObject *entity = [NSEntityDescription insertNewObjectForEntityForName:elementName inManagedObjectContext:_context];		
 //		[self setAttrributesFromDictionary:attributeDict withKeys:directAttributes onEntity:entity];
 //		[entity setValue:_currentEntity forKey:@"dipswitch"];
-	} else if ([elementName isEqualToString:@"control"]) {	
-		directAttributes = [NSArray arrayWithObjects:@"type",@"minimum",@"maximum",@"sensitivity",@"keydelta",@"reverse",nil];
-		NSManagedObject *entity = [NSEntityDescription insertNewObjectForEntityForName:elementName inManagedObjectContext:_context];		
-		[self setAttrributesFromDictionary:attributeDict withKeys:directAttributes onEntity:entity];
-		[entity setValue:_currentEntity forKey:@"input"];
-	}	
+//	} else if ([elementName isEqualToString:@"control"]) {	
+//		directAttributes = [NSArray arrayWithObjects:@"type",@"minimum",@"maximum",@"sensitivity",@"keydelta",@"reverse",nil];
+//		NSManagedObject *entity = [NSEntityDescription insertNewObjectForEntityForName:elementName inManagedObjectContext:_context];		
+//		[self setAttrributesFromDictionary:attributeDict withKeys:directAttributes onEntity:entity];
+//		[entity setValue:_currentEntity forKey:@"input"];
+	}
 
 	
 }
